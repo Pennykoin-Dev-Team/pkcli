@@ -602,7 +602,6 @@ m_walletSynchronized(false),
   m_consoleHandler.setHandler("export_keys", boost::bind(&simple_wallet::export_keys, this, _1), "Show the secret keys of the opened wallet");
   m_consoleHandler.setHandler("create_integrated", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID");
   m_consoleHandler.setHandler("tracking_key", boost::bind(&simple_wallet::export_tracking_key, this, _1), "Show the tracking key of the opened wallet");
-   m_consoleHandler.setHandler("outputs", boost::bind(&simple_wallet::show_num_unlocked_outputs, this, _1), "Show the number of unlocked outputs available for a transaction");
   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
   m_consoleHandler.setHandler("incoming_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
   m_consoleHandler.setHandler("list_transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "list_transfers <height> - Show all known transfers from a certain (optional) block height");
@@ -1629,15 +1628,6 @@ bool simple_wallet::show_blockchain_height(const std::vector<std::string>& args)
   return true;
 }
 
-bool simple_wallet::show_num_unlocked_outputs(const std::vector<std::string>& args) {
-  try {
-    size_t num_unlocked_outputs = m_wallet->getNumUnlockedOutputs();
-    success_msg_writer() << num_unlocked_outputs;
-  } catch (std::exception &e) {
-    fail_msg_writer() << "failed to get outputs: " << e.what();
-  }
-  return true;
-}
 //--------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 std::string simple_wallet::resolveAlias(const std::string& aliasUrl) {

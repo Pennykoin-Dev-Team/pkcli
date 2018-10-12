@@ -54,8 +54,6 @@ namespace CryptoNote {
 		virtual size_t getTransactionCount() override;
 		virtual size_t getTransferCount() override;
 		virtual size_t getDepositCount() override;
-virtual size_t getNumUnlockedOutputs() override;
-
 		virtual TransactionId findTransactionByTransferId(TransferId transferId) override;
 
 		virtual bool getTransaction(TransactionId transactionId, WalletLegacyTransaction& transaction) override;
