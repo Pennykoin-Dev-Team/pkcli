@@ -137,7 +137,7 @@ namespace CryptoNote {
 	}
 
 	uint64_t Currency::calculateInterest(uint64_t amount, uint32_t term) const {
-		assert(m_depositMinTerm <= term && term <= m_depositMaxTerm);
+	
 		assert(static_cast<uint64_t>(term)* m_depositMaxTotalRate > m_depositMinTotalRateFactor);
 
 		uint64_t a = static_cast<uint64_t>(term)* m_depositMaxTotalRate - m_depositMinTotalRateFactor;
