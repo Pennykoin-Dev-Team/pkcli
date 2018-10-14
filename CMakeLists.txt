@@ -1,9 +1,24 @@
 cmake_minimum_required(VERSION 2.8.6)
 
 set(VERSION "0.1")
-# Packaged from commit 72946d93d209ad1dd3b642c395653f166d8060e7
-set(COMMIT 72946d9)
+
 set(REFS " (HEAD -> master)")
+
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Get the latest abbreviated commit hash of the working branch
+execute_process(
+  COMMAND git log -1 --format=%h
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
+add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -137,10 +152,10 @@ if (NOT COMMIT_ID_IN_VERSION)
   set(VERSION "${VERSION}-unknown")
   configure_file("src/version.h.in" "version/version.h")
   add_custom_target(version ALL)
-elseif(DEFINED COMMIT)
+elseif(DEFINED GIT_COMMIT_HASH)
   string(REPLACE "." "\\." VERSION_RE "${VERSION}")
   if(NOT REFS MATCHES "(\\(|, )tag: v${VERSION_RE}(\\)|, )")
-    set(VERSION "${VERSION}-g${COMMIT}")
+ set(VERSION "${VERSION}-${GIT_BRANCH}-g${GIT_COMMIT_HASH}")
   endif()
   configure_file("src/version.h.in" "version/version.h")
   add_custom_target(version ALL)
