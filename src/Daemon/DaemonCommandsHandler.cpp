@@ -31,13 +31,9 @@ DaemonCommandsHandler::DaemonCommandsHandler(CryptoNote::core& core, CryptoNote:
 	m_consoleHandler.setHandler("print_block", boost::bind(&DaemonCommandsHandler::print_block, this, _1), "Print block, print_block <block_hash> | <block_height>");
 	m_consoleHandler.setHandler("print_stat", boost::bind(&DaemonCommandsHandler::print_stat, this, _1), "Print statistics, print_stat <nothing=last> | <block_hash> | <block_height>");
 	m_consoleHandler.setHandler("print_tx", boost::bind(&DaemonCommandsHandler::print_tx, this, _1), "Print transaction, print_tx <transaction_hash>");
-	m_consoleHandler.setHandler("start_mining", boost::bind(&DaemonCommandsHandler::start_mining, this, _1), "Start mining for specified address, start_mining <addr> [threads=1]");
-	m_consoleHandler.setHandler("stop_mining", boost::bind(&DaemonCommandsHandler::stop_mining, this, _1), "Stop mining");
-	m_consoleHandler.setHandler("print_pool", boost::bind(&DaemonCommandsHandler::print_pool, this, _1), "Print transaction pool (long format)");
+		m_consoleHandler.setHandler("print_pool", boost::bind(&DaemonCommandsHandler::print_pool, this, _1), "Print transaction pool (long format)");
 	m_consoleHandler.setHandler("print_pool_sh", boost::bind(&DaemonCommandsHandler::print_pool_sh, this, _1), "Print transaction pool (short format)");
-	m_consoleHandler.setHandler("show_hr", boost::bind(&DaemonCommandsHandler::show_hr, this, _1), "Start showing hash rate");
-	m_consoleHandler.setHandler("hide_hr", boost::bind(&DaemonCommandsHandler::hide_hr, this, _1), "Stop showing hash rate");
-	m_consoleHandler.setHandler("set_log", boost::bind(&DaemonCommandsHandler::set_log, this, _1), "set_log <level> - Change current log level, <level> is a number 0-4");
+		m_consoleHandler.setHandler("set_log", boost::bind(&DaemonCommandsHandler::set_log, this, _1), "set_log <level> - Change current log level, <level> is a number 0-4");
     m_consoleHandler.setHandler("print_ban", boost::bind(&DaemonCommandsHandler::print_ban, this, _1), "Print banned nodes");
   m_consoleHandler.setHandler("ban", boost::bind(&DaemonCommandsHandler::ban, this, _1), "Ban a given <IP> for a given amount of <seconds>, ban <IP> [<seconds>]");
   m_consoleHandler.setHandler("unban", boost::bind(&DaemonCommandsHandler::unban, this, _1), "Unban a given <IP>, unban <IP>");
@@ -57,12 +53,7 @@ std::string DaemonCommandsHandler::get_commands_str()
 	return ss.str();
 }
 //--------------------------------------------------------------------------------
-std::string DaemonCommandsHandler::get_mining_speed(uint32_t hr) {
-  if (hr>1e9) return (boost::format("%.2f GH/s") % (hr / 1e9)).str();
-  if (hr>1e6) return (boost::format("%.2f MH/s") % (hr / 1e6)).str();
-  if (hr>1e3) return (boost::format("%.2f kH/s") % (hr / 1e3)).str();
-  return (boost::format("%.0f H/s") % hr).str();
-}
+
 //--------------------------------------------------------------------------------
 float DaemonCommandsHandler::get_sync_percentage(uint64_t height, uint64_t target_height) {
    target_height = target_height ? target_height < height ? height : target_height : height;
@@ -102,7 +93,7 @@ bool DaemonCommandsHandler::status(const std::vector<std::string>& args) {
   std::cout << std::endl
     << "Height: " << height << "/" << last_known_block_index << " (" << get_sync_percentage(height, last_known_block_index) << "%) "
     << "on " << (m_core.currency().isTestnet() ? "testnet, " : "mainnet, ") << (synced ? "synced, " : "syncing, ")
-    << "network hashrate: " << get_mining_speed(hashrate) << ", difficulty: " << difficulty << ", "
+    << ", difficulty: " << difficulty << ", "
     << outgoing_connections_count << " out. + " << incoming_connections_count << " inc. connections, "
     << "uptime: " << (unsigned int)floor(uptime / 60.0 / 60.0 / 24.0) << "d " << (unsigned int)floor(fmod((uptime / 60.0 / 60.0), 24.0)) << "h "
     << (unsigned int)floor(fmod((uptime / 60.0), 60.0)) << "m " << (unsigned int)fmod(uptime, 60.0) << "s"
@@ -117,24 +108,7 @@ bool DaemonCommandsHandler::print_pl(const std::vector<std::string>& args) {
 	return true;
 }
 //--------------------------------------------------------------------------------
-bool DaemonCommandsHandler::show_hr(const std::vector<std::string>& args)
-{
-	if (!m_core.get_miner().is_mining())
-	{
-		std::cout << "Mining is not started. You need to start mining before you can see hash rate." << ENDL;
-	}
-	else
-	{
-		m_core.get_miner().do_print_hashrate(true);
-	}
-	return true;
-}
-//--------------------------------------------------------------------------------
-bool DaemonCommandsHandler::hide_hr(const std::vector<std::string>& args)
-{
-	m_core.get_miner().do_print_hashrate(false);
-	return true;
-}
+
 //--------------------------------------------------------------------------------
 bool DaemonCommandsHandler::print_bc_outs(const std::vector<std::string>& args)
 {
@@ -407,33 +381,5 @@ bool DaemonCommandsHandler::print_pool(const std::vector<std::string>& args)
 bool DaemonCommandsHandler::print_pool_sh(const std::vector<std::string>& args)
 {
 	logger(Logging::INFO) << "Pool state: " << ENDL << m_core.print_pool(true);
-	return true;
-}
-//--------------------------------------------------------------------------------
-bool DaemonCommandsHandler::start_mining(const std::vector<std::string> &args) {
-	if (!args.size()) {
-		std::cout << "Please, specify wallet address to mine for: start_mining <addr> [threads=1]" << std::endl;
-		return true;
-	}
-
-	CryptoNote::AccountPublicAddress adr;
-	if (!m_core.currency().parseAccountAddressString(args.front(), adr)) {
-		std::cout << "target account address has wrong format" << std::endl;
-		return true;
-	}
-
-	size_t threads_count = 1;
-	if (args.size() > 1) {
-		bool ok = Common::fromString(args[1], threads_count);
-		threads_count = (ok && 0 < threads_count) ? threads_count : 1;
-	}
-
-	m_core.get_miner().start(adr, threads_count);
-	return true;
-}
-
-//--------------------------------------------------------------------------------
-bool DaemonCommandsHandler::stop_mining(const std::vector<std::string>& args) {
-	m_core.get_miner().stop();
 	return true;
 }
