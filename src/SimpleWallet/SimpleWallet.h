@@ -72,8 +72,6 @@ namespace CryptoNote
     bool close_wallet();
     bool help(const std::vector<std::string> &args = std::vector<std::string>());
     bool exit(const std::vector<std::string> &args);
-    bool start_mining(const std::vector<std::string> &args);
-    bool stop_mining(const std::vector<std::string> &args);
     bool show_balance(const std::vector<std::string> &args = std::vector<std::string>());
     bool show_incoming_transfers(const std::vector<std::string> &args);
     bool show_payments(const std::vector<std::string> &args);

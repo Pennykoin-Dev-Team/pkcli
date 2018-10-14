@@ -597,8 +597,6 @@ simple_wallet::simple_wallet(System::Dispatcher& dispatcher, const CryptoNote::C
   m_initResultPromise(nullptr),
 m_walletSynchronized(false),
   m_trackingWallet(false){
-  m_consoleHandler.setHandler("start_mining", boost::bind(&simple_wallet::start_mining, this, _1), "start_mining [<number_of_threads>] - Start mining in daemon");
-  m_consoleHandler.setHandler("stop_mining", boost::bind(&simple_wallet::stop_mining, this, _1), "Stop mining in daemon");
   m_consoleHandler.setHandler("export_keys", boost::bind(&simple_wallet::export_keys, this, _1), "Show the secret keys of the opened wallet");
   m_consoleHandler.setHandler("create_integrated", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID");
   m_consoleHandler.setHandler("tracking_key", boost::bind(&simple_wallet::export_tracking_key, this, _1), "Show the tracking key of the opened wallet");
@@ -1306,74 +1304,9 @@ bool simple_wallet::reset(const std::vector<std::string> &args) {
   return true;
 }
 
-bool simple_wallet::start_mining(const std::vector<std::string>& args) {
-  COMMAND_RPC_START_MINING::request req;
-  req.miner_address = m_wallet->getAddress();
 
-  bool ok = true;
-  size_t max_mining_threads_count = (std::max)(std::thread::hardware_concurrency(), static_cast<unsigned>(2));
-  if (0 == args.size()) {
-    req.threads_count = 1;
-  } else if (1 == args.size()) {
-    uint16_t num = 1;
-    ok = Common::fromString(args[0], num);
-    ok = ok && (1 <= num && num <= max_mining_threads_count);
-    req.threads_count = num;
-  } else {
-    ok = false;
-  }
-
-  if (!ok) {
-    fail_msg_writer() << "invalid arguments. Please use start_mining [<number_of_threads>], " <<
-      "<number_of_threads> should be from 1 to " << max_mining_threads_count;
-    return true;
-  }
-
-
-  COMMAND_RPC_START_MINING::response res;
-
-  try {
-    HttpClient httpClient(m_dispatcher, m_daemon_host, m_daemon_port);
-
-    invokeJsonCommand(httpClient, "/start_mining", req, res);
-
-    std::string err = interpret_rpc_response(true, res.status);
-    if (err.empty())
-      success_msg_writer() << "Mining started in daemon";
-    else
-      fail_msg_writer() << "mining has NOT been started: " << err;
-
-  } catch (const ConnectException&) {
-    printConnectionError();
-  } catch (const std::exception& e) {
-    fail_msg_writer() << "Failed to invoke rpc method: " << e.what();
-  }
-
-  return true;
-}
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::stop_mining(const std::vector<std::string>& args)
-{
-  COMMAND_RPC_STOP_MINING::request req;
-  COMMAND_RPC_STOP_MINING::response res;
 
-  try {
-    HttpClient httpClient(m_dispatcher, m_daemon_host, m_daemon_port);
-
-    invokeJsonCommand(httpClient, "/stop_mining", req, res);
-    std::string err = interpret_rpc_response(true, res.status);
-    if (err.empty())
-      success_msg_writer() << "Mining stopped in daemon";
-    else
-      fail_msg_writer() << "mining has NOT been stopped: " << err;
-  } catch (const ConnectException&) {
-    printConnectionError();
-  } catch (const std::exception& e) {
-    fail_msg_writer() << "Failed to invoke rpc method: " << e.what();
-  }
-
-  return true;
-}
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::initCompleted(std::error_code result) {
   if (m_initResultPromise.get() != nullptr) {
