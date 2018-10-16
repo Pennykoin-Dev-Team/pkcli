@@ -15,7 +15,7 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
   will set up the environment needed. To build just enter "make" in the directory you cloned to.
 
 
-[![Build Status](https://travis-ci.org/Pennykoin/Pennykoin.svg?branch=jtest)](https://travis-ci.org/Pennykoin/Pennykoin)
+[![Build Status](https://travis-ci.org/Pennykoin/PKCLi.svg?branch=master)](https://travis-ci.org/Pennykoin/Pennykoin)
 
 
 
