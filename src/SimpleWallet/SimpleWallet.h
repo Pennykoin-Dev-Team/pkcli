@@ -1,33 +1,22 @@
-// Copyright (c) 2011-2017 The Cryptonote developers
-// Copyright (c) 2014-2017 XDN developers
-// Copyright (c) 2016-2017 BXC developers
-// Copyright (c) 2017 Royalties developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#pragma once
-
 #include <condition_variable>
 #include <future>
 #include <memory>
 #include <mutex>
-
 #include <boost/program_options/variables_map.hpp>
-
 #include "IWalletLegacy.h"
 #include "PasswordContainer.h"
-
 #include "Common/ConsoleHandler.h"
 #include "CryptoNoteCore/CryptoNoteBasicImpl.h"
 #include "CryptoNoteCore/Currency.h"
 #include "NodeRpcProxy/NodeRpcProxy.h"
 #include "WalletLegacy/WalletHelper.h"
-
 #include <Logging/LoggerRef.h>
 #include <Logging/LoggerManager.h>
-
 #include <System/Dispatcher.h>
 #include <System/Ipv4Address.h>
+
+
+
 
 namespace CryptoNote
 {
@@ -85,7 +74,7 @@ namespace CryptoNote
     bool save(const std::vector<std::string> &args);
     bool reset(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
-
+    bool generate_payment_id(const std::vector<std::string> &args);
     bool ask_wallet_create_if_needed();
     std::string resolveAlias(const std::string& aliasUrl);
 

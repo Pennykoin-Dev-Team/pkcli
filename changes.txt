@@ -22,7 +22,8 @@
     modified interest generation to work with new wallets
     removed mining commands from pknode & pkcli
     more intuitive naming system for binaries
-    updated readme/changes & copyright notices
+    simplewallet can generate paymentID at random now
+     updated readme/changes & copyright notices
 
 
   
