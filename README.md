@@ -1,6 +1,7 @@
 # Pennykoin
 
 [![Build Status](https://travis-ci.org/Pennykoin/PKCli.svg?branch=master)](https://travis-ci.org/Pennykoin/PKCli)
+Above build status is for OSX and Ubuntu 16.04
 
 
    Pennykoin is a private, secure cryptocurrency primarily forked form digital/dark/ducknote.  There was no premine or ICO, all coins are emitted as mining rewards or interest.  Pennykoin works like cash, nobody can track your purchases, or see what's in your wallet. But it's easier than cash, it works like an online checking account, including an option to deposit pennykoin and earn interest.
