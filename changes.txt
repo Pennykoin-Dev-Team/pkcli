@@ -10,7 +10,7 @@
     fixed hang on close error
     more detailed rpc error messages
     triangular distribution of mixins from XMR
-    softcoded min mixin of 7 in both pkgui & pkcli, rpc & commandline can use less til next hardfork
+    softcoded min mixin of 3 in both pkgui & pkcli
     hardcoded max mixin of 11 
     getlastblockheader includes deposit info
     /getinfo has number of gen coins
@@ -24,6 +24,7 @@
     more intuitive naming system for binaries
     simplewallet can generate paymentID at random now
      updated readme/changes & copyright notices
+     triangular mixin dist was leading to issues with unsent tx, removed
 
 
   

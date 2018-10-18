@@ -1668,8 +1668,8 @@ bool simple_wallet::transfer(const std::vector<std::string> &args) {
     WalletHelper::IWalletRemoveObserverGuard removeGuard(*m_wallet, sent);
 
 
-    if (cmd.fake_outs_count < 5) {
-      fail_msg_writer() << "Mixin too small, must be above 5";
+    if (cmd.fake_outs_count < 2) {
+      fail_msg_writer() << "Mixin too small, must be above 2";
       return true;
     }
 
