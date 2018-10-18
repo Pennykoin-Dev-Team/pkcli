@@ -1,5 +1,8 @@
 # Pennykoin
 
+[![Build Status](https://travis-ci.org/Pennykoin/PKCli.svg?branch=master)](https://travis-ci.org/Pennykoin/PKCli)
+
+
    Pennykoin is a private, secure cryptocurrency primarily forked form digital/dark/ducknote.  There was no premine or ICO, all coins are emitted as mining rewards or interest.  Pennykoin works like cash, nobody can track your purchases, or see what's in your wallet. But it's easier than cash, it works like an online checking account, including an option to deposit pennykoin and earn interest.
    
    Pennykoin strives to provide a powerful API for websites, apps, and merchants to integrate easily. PKService & PKCli have different APIs, documentation is on the way for both.
@@ -15,9 +18,8 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
   will set up the environment needed. To build just enter "make" in the directory you cloned to.
 
 
-[![Build Status](https://travis-ci.org/Pennykoin/PKCLi.svg?branch=master)](https://travis-ci.org/Pennykoin/Pennykoin)
 
 
 
 
-   experimental, dont use
+Not official release, but close beta
