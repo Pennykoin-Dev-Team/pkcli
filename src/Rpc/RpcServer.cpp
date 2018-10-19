@@ -337,7 +337,6 @@ namespace CryptoNote {
 		res.full_deposit_interest = m_core.fullDepositInterest();
 		res.version = PROJECT_VERSION_LONG;
 		res.status = CORE_RPC_STATUS_OK;
-		 res.start_time = m_core.getStartTime();
 		return true;
 	}
 

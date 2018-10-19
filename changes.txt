@@ -24,7 +24,7 @@
     more intuitive naming system for binaries
     simplewallet can generate paymentID at random now
      updated readme/changes & copyright notices
-     triangular mixin dist was leading to issues with unsent tx, removed
+    killed then remimplemented triangular mixins as I found the actual issue
 
 
   
