@@ -661,7 +661,13 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
   }
 
   if (m_generate_new.empty() && m_wallet_file_arg.empty()) {
-    std::cout << "Choose from the following\n \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[I]mport from spend & receive keys\n[T]racking wallet import\n[E]xit.\n";
+ std::cout << "  " << ENDL
+    << "      _____ _____ _____ _____ __ __ _____ _____ _____ _____ " << ENDL
+    << "     |  _  |   __|   | |   | |  |  |  |  |     |     |   | |" << ENDL
+    << "     |   __|   __| | | | | | |_   _|    -|  |  |-   -| | | |" << ENDL
+    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|" << ENDL
+     << "  " << ENDL;
+    std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[I]mport from spend & receive keys\n[T]racking wallet import\n[E]xit.\n";
     char c;
     do {
       std::string answer;
