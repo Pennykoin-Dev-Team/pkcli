@@ -73,6 +73,7 @@ namespace CryptoNote
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool save(const std::vector<std::string> &args);
     bool reset(const std::vector<std::string> &args);
+      bool show_num_unlocked_outputs(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
     bool generate_payment_id(const std::vector<std::string> &args);
     bool ask_wallet_create_if_needed();

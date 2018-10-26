@@ -121,7 +121,7 @@ public:
   virtual uint64_t pendingBalance() = 0;
   virtual uint64_t actualDepositBalance() = 0;
   virtual uint64_t pendingDepositBalance() = 0;
-
+  virtual size_t getNumUnlockedOutputs() = 0;
   virtual size_t getTransactionCount() = 0;
   virtual size_t getTransferCount() = 0;
   virtual size_t getDepositCount() = 0;

@@ -232,6 +232,11 @@ namespace CryptoNote {
 
 		m_observerManager.notify(&IWalletLegacyObserver::initCompleted, std::error_code());
 	}
+size_t WalletLegacy::getNumUnlockedOutputs() {
+  std::vector<TransactionOutputInformation> outputs;
+  m_transferDetails->getOutputs(outputs, ITransfersContainer::IncludeKeyUnlocked);
+  return outputs.size();
+}
 
 	void WalletLegacy::shutdown() {
 		{

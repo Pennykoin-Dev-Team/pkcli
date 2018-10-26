@@ -41,7 +41,7 @@ namespace CryptoNote {
 		virtual void reset() override;
 
 		virtual void save(std::ostream& destination, bool saveDetailed = true, bool saveCache = true) override;
-
+ virtual size_t getNumUnlockedOutputs() override;
 		virtual std::error_code changePassword(const std::string& oldPassword, const std::string& newPassword) override;
 
 		virtual std::string getAddress() override;

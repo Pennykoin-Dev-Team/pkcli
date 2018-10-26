@@ -108,6 +108,7 @@ namespace Tools {
 				{ "getbalance", makeMemberMethod(&wallet_rpc_server::on_getbalance) },
 				{ "transfer", makeMemberMethod(&wallet_rpc_server::on_transfer) },
 				{ "store", makeMemberMethod(&wallet_rpc_server::on_store) },
+				      { "get_height", makeMemberMethod(&wallet_rpc_server::on_get_height) },
 				{ "get_messages", makeMemberMethod(&wallet_rpc_server::on_get_messages) },
 				{ "get_payments", makeMemberMethod(&wallet_rpc_server::on_get_payments) },
 				{ "get_transfers", makeMemberMethod(&wallet_rpc_server::on_get_transfers) },
@@ -210,6 +211,10 @@ namespace Tools {
 		}
 		return true;
 	}
+bool wallet_rpc_server::on_get_outputs(const wallet_rpc::COMMAND_RPC_GET_OUTPUTS::request& req, wallet_rpc::COMMAND_RPC_GET_OUTPUTS::response& res) {
+  res.num_unlocked_outputs = m_wallet.getNumUnlockedOutputs();
+  return true;
+}
 
 	//------------------------------------------------------------------------------------------------------------------------------
 	bool wallet_rpc_server::on_store(const wallet_rpc::COMMAND_RPC_STORE::request& req, wallet_rpc::COMMAND_RPC_STORE::response& res) {
