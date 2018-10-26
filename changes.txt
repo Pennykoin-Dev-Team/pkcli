@@ -28,6 +28,7 @@
 ____________________________________________________________________________
 
 Killing view/spend keys as tracking reproduces view
+more intuitive sw commands
 
 
   
