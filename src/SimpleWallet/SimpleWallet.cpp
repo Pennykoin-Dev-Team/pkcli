@@ -665,15 +665,15 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
     << "      _____ _____ _____ _____ __ __ _____ _____ _____ _____ " << ENDL
     << "     |  _  |   __|   | |   | |  |  |  |  |     |     |   | |" << ENDL
     << "     |   __|   __| | | | | | |_   _|    -|  |  |-   -| | | |" << ENDL
-    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|" << ENDL
+    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|   CLI WALLET" << ENDL
      << "  " << ENDL;
-    std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[I]mport from spend & receive keys\n[T]racking wallet import\n[E]xit.\n";
+    std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[T]racking wallet import\n[E]xit.\n";
     char c;
     do {
       std::string answer;
       std::getline(std::cin, answer);
       c = answer[0];
-      if (!(c == 'O' || c == 'G' || c == 'E' || c == 'I' || c == 'o' || c == 'T' || c == 't' || c == 'g' || c == 'e' || c == 'R' || c == 'r' || c == 'M' || c == 'm' || c == 'i' )) {
+      if (!(c == 'O' || c == 'G' || c == 'E' || c == 'o' || c == 'T' || c == 't' || c == 'g' || c == 'e' || c == 'R' || c == 'r' || c == 'M' || c == 'm' )) {
         std::cout << "Unknown command: " << c <<std::endl;
       } else {
         break;
@@ -692,10 +692,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
       boost::algorithm::trim(userInput);
     } while (userInput.empty());
 
-    if (c == 'i' || c == 'I') {
-      key_import = true;
-      m_import_new = userInput;
-    } else if (c == 'm' || c == 'M') {
+   if (c == 'm' || c == 'M') {
       key_import = false;
       m_import_new = userInput;
     } else if (c == 'g' || c == 'G') {
@@ -1385,10 +1382,9 @@ void simple_wallet::synchronizationProgressUpdated(uint32_t current, uint32_t to
 bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
   AccountKeys keys;
   m_wallet->getAccountKeys(keys);
-  success_msg_writer(true) << "Spend secret key: " << Common::podToHex(keys.spendSecretKey);
-  success_msg_writer(true) << "View secret key: " <<  Common::podToHex(keys.viewSecretKey);
+ 
   
-  success_msg_writer(true) << "Private keys: " <<  Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+  success_msg_writer(true) << "Private key: " <<  Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
     std::string(reinterpret_cast<char*>(&keys), sizeof(keys)));
     Crypto::PublicKey unused_dummy_variable;
   Crypto::SecretKey deterministic_private_view_key;
@@ -1396,7 +1392,7 @@ bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::ve
   bool deterministic_private_keys = deterministic_private_view_key == keys.viewSecretKey;
 /* dont show a mnemonic seed if it is an old non-deterministic wallet */
   if (deterministic_private_keys) {
-    std::cout << "Mnemonic seed: " << generate_mnemonic(keys.spendSecretKey) << std::endl;
+    std::cout << "25 Word phrase: " << generate_mnemonic(keys.spendSecretKey) << std::endl;
   }
   
   return true;

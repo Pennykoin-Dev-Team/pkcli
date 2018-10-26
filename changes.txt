@@ -10,8 +10,8 @@
     fixed hang on close error
     more detailed rpc error messages
     triangular distribution of mixins from XMR
-    softcoded min mixin of 3 in both pkgui & pkcli
-    hardcoded max mixin of 11 
+    softcoded static mixin of 3 gui
+    set minimum of 2 (3 ring size) mixin for CLI
     getlastblockheader includes deposit info
     /getinfo has number of gen coins
     status command for daemon
@@ -25,8 +25,9 @@
     simplewallet can generate paymentID at random now
      updated readme/changes & copyright notices
     killed then remimplemented triangular mixins as I found the actual issue 
+____________________________________________________________________________
 
-    
+Killing view/spend keys as tracking reproduces view
 
 
   
