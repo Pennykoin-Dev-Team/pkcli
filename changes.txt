@@ -24,7 +24,9 @@
     more intuitive naming system for binaries
     simplewallet can generate paymentID at random now
      updated readme/changes & copyright notices
-    killed then remimplemented triangular mixins as I found the actual issue
+    killed then remimplemented triangular mixins as I found the actual issue 
+
+    
 
 
   
