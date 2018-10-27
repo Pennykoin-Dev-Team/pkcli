@@ -693,7 +693,7 @@ namespace CryptoNote {
 		return bounds;
 	}
 
-	size_t WalletGreen::transfer(const TransactionParameters& transactionParameters) {
+size_t WalletGreen::transfer(const TransactionParameters& transactionParameters, Crypto::SecretKey& transactionSK) {
 		Tools::ScopeExit releaseContext([this] {
 			m_dispatcher.yield();
 		});
@@ -704,7 +704,7 @@ namespace CryptoNote {
 		throwIfTrackingMode();
 		throwIfStopped();
 
-		return doTransfer(transactionParameters);
+	return doTransfer(transactionParameters, transactionSK);
 	}
 
 	void WalletGreen::prepareTransaction(std::vector<WalletOuts>&& wallets,
@@ -715,7 +715,8 @@ namespace CryptoNote {
 		uint64_t unlockTimestamp,
 		const DonationSettings& donation,
 		const CryptoNote::AccountPublicAddress& changeDestination,
-		PreparedTransaction& preparedTransaction) {
+		 PreparedTransaction& preparedTransaction,
+  Crypto::SecretKey& transactionSK) {
 		preparedTransaction.destinations = convertOrdersToTransfers(orders);
 		preparedTransaction.neededMoney = countNeededMoney(preparedTransaction.destinations, fee);
 
@@ -751,7 +752,7 @@ namespace CryptoNote {
 			decomposedOutputs.emplace_back(std::move(splittedChange));
 		}
 
-		preparedTransaction.transaction = makeTransaction(decomposedOutputs, keysInfo, extra, unlockTimestamp);
+		 preparedTransaction.transaction = makeTransaction(decomposedOutputs, keysInfo, extra, unlockTimestamp, transactionSK);
 	}
 
 	void WalletGreen::validateTransactionParameters(const TransactionParameters& transactionParameters) {
@@ -797,7 +798,7 @@ namespace CryptoNote {
 		}
 	}
 
-	size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameters) {
+size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameters, Crypto::SecretKey& transactionSK) {
 		validateTransactionParameters(transactionParameters);
 		CryptoNote::AccountPublicAddress changeDestination = getChangeDestination(transactionParameters.changeDestination, transactionParameters.sourceAddresses);
 
@@ -818,7 +819,8 @@ namespace CryptoNote {
 			transactionParameters.unlockTimestamp,
 			transactionParameters.donation,
 			changeDestination,
-			preparedTransaction);
+		 preparedTransaction,
+    transactionSK);
 
 		return validateSaveAndSendTransaction(*preparedTransaction.transaction, preparedTransaction.destinations, false, true);
 	}
@@ -844,6 +846,7 @@ namespace CryptoNote {
 		else {
 			wallets = pickWalletsWithMoney();
 		}
+		 Crypto::SecretKey transactionSK;
 
 		PreparedTransaction preparedTransaction;
 		prepareTransaction(
@@ -855,7 +858,8 @@ namespace CryptoNote {
 			sendingTransaction.unlockTimestamp,
 			sendingTransaction.donation,
 			changeDestination,
-			preparedTransaction);
+		    preparedTransaction,
+    transactionSK);
 
 		return validateSaveAndSendTransaction(*preparedTransaction.transaction, preparedTransaction.destinations, false, false);
 	}
@@ -1243,9 +1247,12 @@ namespace CryptoNote {
 	}
 
 	std::unique_ptr<CryptoNote::ITransaction> WalletGreen::makeTransaction(const std::vector<ReceiverAmounts>& decomposedOutputs,
-		std::vector<InputInfo>& keysInfo, const std::string& extra, uint64_t unlockTimestamp) {
+		 std::vector<InputInfo>& keysInfo,
+		  const std::string& extra, 
+		  uint64_t unlockTimestamp, 
+		  Crypto::SecretKey &transactionSK) {
 		std::unique_ptr<ITransaction> tx = createTransaction();
-
+        tx->getTransactionSecretKey(transactionSK);
 		typedef std::pair<const AccountPublicAddress*, uint64_t> AmountToAddress;
 		std::vector<AmountToAddress> amountsToAddresses;
 		for (const auto& output : decomposedOutputs) {
@@ -2112,7 +2119,8 @@ namespace CryptoNote {
 			ReceiverAmounts decomposedOutputs = decomposeFusionOutputs(inputsAmount);
 			assert(decomposedOutputs.amounts.size() <= MAX_FUSION_OUTPUT_COUNT);
 
-			fusionTransaction = makeTransaction(std::vector<ReceiverAmounts>{decomposedOutputs}, keysInfo, "", 0);
+   Crypto::SecretKey transactionSK;
+    fusionTransaction = makeTransaction(std::vector<ReceiverAmounts>{decomposedOutputs}, keysInfo, "", 0, transactionSK);
 
 			transactionSize = getTransactionSize(*fusionTransaction);
 
