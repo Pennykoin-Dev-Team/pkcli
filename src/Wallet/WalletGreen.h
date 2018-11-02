@@ -59,7 +59,7 @@ namespace CryptoNote {
 		virtual std::vector<WalletTransactionWithTransfers> getUnconfirmedTransactions() const override;
 		virtual std::vector<size_t> getDelayedTransactionIds() const override;
 
-		virtual size_t transfer(const TransactionParameters& sendingTransaction, Crypto::SecretKey& transactionSK) override;
+		virtual size_t transfer(const TransactionParameters& sendingTransaction) override;
 
 		virtual size_t makeTransaction(const TransactionParameters& sendingTransaction) override;
 		virtual void commitTransaction(size_t) override;
@@ -178,11 +178,10 @@ namespace CryptoNote {
 			uint64_t unlockTimestamp,
 			const DonationSettings& donation,
 			const CryptoNote::AccountPublicAddress& changeDestinationAddress,
-		   PreparedTransaction& preparedTransaction,
-    Crypto::SecretKey& transactionSK);
+			PreparedTransaction& preparedTransaction);
 
 		void validateTransactionParameters(const TransactionParameters& transactionParameters);
- size_t doTransfer(const TransactionParameters& transactionParameters, Crypto::SecretKey& transactionSK);
+		size_t doTransfer(const TransactionParameters& transactionParameters);
 
 		void requestMixinOuts(const std::vector<OutputToTransfer>& selectedTransfers,
 			uint64_t mixIn,
@@ -204,8 +203,9 @@ namespace CryptoNote {
 		ReceiverAmounts splitAmount(uint64_t amount, const AccountPublicAddress& destination, uint64_t dustThreshold);
 
 		std::unique_ptr<CryptoNote::ITransaction> makeTransaction(const std::vector<ReceiverAmounts>& decomposedOutputs,
-		 std::vector<InputInfo>& keysInfo, const std::string& extra, uint64_t unlockTimestamp, Crypto::SecretKey &transactionSK);
-			void sendTransaction(const CryptoNote::Transaction& cryptoNoteTransaction);
+			std::vector<InputInfo>& keysInfo, const std::string& extra, uint64_t unlockTimestamp);
+
+		void sendTransaction(const CryptoNote::Transaction& cryptoNoteTransaction);
 		size_t validateSaveAndSendTransaction(const ITransactionReader& transaction, const std::vector<WalletTransfer>& destinations, bool isFusion, bool send);
 
 		size_t insertBlockchainTransaction(const TransactionInformation& info, int64_t txBalance);

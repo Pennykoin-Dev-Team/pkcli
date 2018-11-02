@@ -1,7 +1,7 @@
 
 
 #include "Blockchain.h"
-#include <cmath>
+
 #include <algorithm>
 #include <cstdio>
 #include <boost/foreach.hpp>
@@ -737,22 +737,11 @@ bool Blockchain::rollback_blockchain_switching(std::list<Block> &original_chain,
   return true;
 }
 
-
 bool Blockchain::switch_to_alternative_blockchain(std::list<blocks_ext_by_hash::iterator>& alt_chain, bool discard_disconnected_chain) {
   std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
   if (!(alt_chain.size())) {
     logger(ERROR, BRIGHT_RED) << "switch_to_alternative_blockchain: empty chain passed";
-    return false;
-  }
- /*
-    For a coin with small hashrate as a temp. 51% attack protection
-    do not allow reogrs with long alt. chain as normally 
-    reorgs longer than 2 blocks do not happen.
-    By fireice_uk from Ryo Currency Project
-  */
-  if (alt_chain.size() > 4) {
-    logger(ERROR, BRIGHT_RED) << "Attempt to switch to an improbably long alt. chain of size " << alt_chain.size() << " blocked - likely 51% attack.";
     return false;
   }
 
@@ -1288,29 +1277,11 @@ bool Blockchain::getRandomOutsByAmount(const COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_
     size_t up_index_limit = find_end_of_allowed_index(amount_outs);
     if (!(up_index_limit <= amount_outs.size())) { logger(ERROR, BRIGHT_RED) << "internal error: find_end_of_allowed_index returned wrong index=" << up_index_limit << ", with amount_outs.size = " << amount_outs.size(); return false; }
 
-
- if(amount_outs.size() > req.outs_count)
-    {
-      std::set<size_t> used;
-      size_t try_count = 0;
-      for(uint64_t j = 0; j != req.outs_count && try_count < up_index_limit;)
-      {
-	    // triangular distribution over [a,b) with a=0, mode c=b=up_index_limit
-        uint64_t r = Crypto::rand<uint64_t>() % ((uint64_t)1 << 53);
-        double frac = std::sqrt((double)r / ((uint64_t)1 << 53));
-        size_t i = (size_t)(frac*up_index_limit);
-        if(used.count(i))
-          continue;
-        bool added = add_out_to_get_random_outs(amount_outs, result_outs, amount, i);
-        used.insert(i);
-        if(added)
-          ++j;
-        ++try_count;
+    if (up_index_limit > 0) {
+      ShuffleGenerator<size_t, Crypto::random_engine<size_t>> generator(up_index_limit);
+      for (uint64_t j = 0; j < up_index_limit && result_outs.outs.size() < req.outs_count; ++j) {
+        add_out_to_get_random_outs(amount_outs, result_outs, amount, generator());
       }
-    }else
-    {
-      for(size_t i = 0; i != up_index_limit; i++)
-        add_out_to_get_random_outs(amount_outs, result_outs, amount, i);
     }
   }
   return true;
@@ -1502,7 +1473,6 @@ bool Blockchain::checkTransactionInputs(const Transaction& tx, const Crypto::Has
   for (const auto& txin : tx.inputs) {
     assert(inputIndex < tx.signatures.size());
     if (txin.type() == typeid(KeyInput)) {
-    
       const KeyInput& in_to_key = boost::get<KeyInput>(txin);
       if (!(!in_to_key.outputIndexes.empty())) { logger(ERROR, BRIGHT_RED) << "empty in_to_key.outputIndexes in transaction with id " << getObjectHash(tx); return false; }
 

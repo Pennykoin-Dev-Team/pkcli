@@ -1,24 +1,9 @@
 cmake_minimum_required(VERSION 2.8.6)
 
 set(VERSION "0.1")
-
+# Packaged from commit 72946d93d209ad1dd3b642c395653f166d8060e7
+set(COMMIT 72946d9)
 set(REFS " (HEAD -> master)")
-
-execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-# Get the latest abbreviated commit hash of the working branch
-execute_process(
-  COMMAND git log -1 --format=%h
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
-add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,7 +13,7 @@ set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo Release CACHE TYPE INTERNAL)
 set(CMAKE_SKIP_INSTALL_RULES ON)
 set(CMAKE_SKIP_PACKAGE_ALL_DEPENDENCY ON)
 set(CMAKE_SUPPRESS_REGENERATION ON)
-# enable_testing()   build test suite
+#enable_testing()
 # copy CTestCustom.cmake to build dir to disable long running tests in 'make test'
 configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR})
 
@@ -40,7 +25,7 @@ if(APPLE)
   enable_language(ASM)
 endif()
 
-file(COPY ".pennykoin" DESTINATION $ENV{HOME})
+#file(COPY ".pennykoin" DESTINATION $ENV{HOME})
 if(MSVC)
   include_directories(src/Platform/Windows)
 elseif(APPLE)
@@ -79,7 +64,7 @@ else()
   if(APPLE)
   set(WARNINGS "-Wall -Wextra -Wpointer-arith -Wundef -Wvla -Wwrite-strings -Werror -Wno-error=extra -Wno-error-unused-lambda-capture -Wno-error-exceptions -Wno-error=unused-function -Wno-error-unused-private-field -Wno-error=deprecated-declarations -Wno-error=sign-compare -Wno-error=strict-aliasing -Wno-error=type-limits -Wno-unused-parameter -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized -Wno-error=unused-result")
   else()
-  set(WARNINGS "-Wall -Wextra -Wpointer-arith -Wundef -Wno-error=maybe-uninitialized -Wno-error=parentheses -Wno-error=return-type -Wvla -Wwrite-strings -Wno-error=maybe-uninitialized -Werror -Wno-error=extra -Wno-error=unused-but-set-variable -Wno-error=unused-function -Wno-error=deprecated-declarations -Wno-error=sign-compare -Wno-error=strict-aliasing -Wno-error=type-limits -Wno-unused-parameter -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized -Wno-error=unused-result")
+  set(WARNINGS "-Wall -Wextra -Wpointer-arith -Wundef -Wvla -Wno-error=parentheses -Wno-error=return-type -Wwrite-strings -Wno-error=maybe-uninitialized -Werror -Wno-error=extra -Wno-error=unused-but-set-variable -Wno-error=unused-function -Wno-error=deprecated-declarations -Wno-error=sign-compare -Wno-error=strict-aliasing -Wno-error=type-limits -Wno-unused-parameter -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized -Wno-error=unused-result")
 endif()
   if(MINGW)
     set(WARNINGS "${WARNINGS} -Wno-error=unused-value")
@@ -93,11 +78,11 @@ endif()
   endif()
   set(C_WARNINGS "-Waggregate-return -Wnested-externs -Wold-style-definition -Wstrict-prototypes")
   set(CXX_WARNINGS "-Wno-reorder -Wno-missing-field-initializers")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${MINGW_FLAG} ${WARNINGS} ${C_WARNINGS} ${ARCH_FLAG} -maes")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${MINGW_FLAG} ${WARNINGS} ${C_WARNINGS} ${ARCH_FLAG}")
   if(NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${MINGW_FLAG} ${WARNINGS} ${CXX_WARNINGS} ${ARCH_FLAG} -pthread -maes")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${MINGW_FLAG} ${WARNINGS} ${CXX_WARNINGS} ${ARCH_FLAG} -pthread")
   if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGTEST_HAS_TR1_TUPLE=0")
   endif()
@@ -135,7 +120,7 @@ if(STATIC)
 endif()
 
 #set(Boost_DEBUG on)
-find_package(Boost 1.53 REQUIRED COMPONENTS system thread filesystem date_time chrono regex serialization program_options)
+find_package(Boost 1.53 REQUIRED COMPONENTS system filesystem date_time chrono regex serialization program_options)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package( Threads )
 if(MINGW)
@@ -152,10 +137,10 @@ if (NOT COMMIT_ID_IN_VERSION)
   set(VERSION "${VERSION}-unknown")
   configure_file("src/version.h.in" "version/version.h")
   add_custom_target(version ALL)
-elseif(DEFINED GIT_COMMIT_HASH)
+elseif(DEFINED COMMIT)
   string(REPLACE "." "\\." VERSION_RE "${VERSION}")
   if(NOT REFS MATCHES "(\\(|, )tag: v${VERSION_RE}(\\)|, )")
- set(VERSION "${VERSION}-${GIT_BRANCH}-g${GIT_COMMIT_HASH}")
+    set(VERSION "${VERSION}-g${COMMIT}")
   endif()
   configure_file("src/version.h.in" "version/version.h")
   add_custom_target(version ALL)
@@ -174,4 +159,4 @@ endif()
 
 add_subdirectory(external)
 add_subdirectory(src)
-# add_subdirectory(tests)  build test suite
+# add_subdirectory(tests)

@@ -79,7 +79,7 @@ namespace CryptoNote {
 
 		m_state = STATE_INITIALIZING;
 		resetInternalState();
-m_workerThread = std::thread([this, callback] {
+		m_workerThread = std::thread([this, callback] {
 			workerThread(callback);
 		});
 	}

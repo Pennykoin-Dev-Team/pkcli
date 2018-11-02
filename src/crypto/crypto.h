@@ -37,11 +37,11 @@ struct EllipticCurveScalar {
     crypto_ops(const crypto_ops &);
     void operator=(const crypto_ops &);
     ~crypto_ops();
+     static void generate_keys_from_seed(PublicKey &, SecretKey &, SecretKey &);
+    friend void generate_keys_from_seed(PublicKey &, SecretKey &, SecretKey &);
 
     static void generate_keys(PublicKey &, SecretKey &);
     friend void generate_keys(PublicKey &, SecretKey &);
-      static void generate_keys_from_seed(PublicKey &, SecretKey &, SecretKey &);
-    friend void generate_keys_from_seed(PublicKey &, SecretKey &, SecretKey &);
     static bool check_key(const PublicKey &);
     friend bool check_key(const PublicKey &);
     static bool secret_key_to_public_key(const SecretKey &, PublicKey &);

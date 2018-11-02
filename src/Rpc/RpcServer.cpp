@@ -330,8 +330,6 @@ namespace CryptoNote {
 		res.incoming_connections_count = total_conn - res.outgoing_connections_count;
 		res.white_peerlist_size = m_p2p.getPeerlistManager().get_white_peers_count();
 		res.grey_peerlist_size = m_p2p.getPeerlistManager().get_gray_peers_count();
-  		// that large uint64_t number is unsafe in JavaScript environment and therefore as a JSON value so we display it as a formatted string
-  		res.already_generated_coins = m_core.currency().formatAmount(m_core.getTotalGeneratedAmount());
 		res.last_known_block_index = std::max(static_cast<uint32_t>(1), m_protocolQuery.getObservedHeight()) - 1;
 		res.full_deposit_amount = m_core.fullDepositAmount();
 		res.full_deposit_interest = m_core.fullDepositInterest();
@@ -948,7 +946,6 @@ namespace CryptoNote {
 	void RpcServer::fill_block_header_response(const Block& blk, bool orphan_status, uint64_t height, const Hash& hash, block_header_response& responce) {
 		responce.major_version = blk.majorVersion;
 		responce.minor_version = blk.minorVersion;
-		responce.deposits = m_core.depositAmountAtHeight(height);
 		responce.timestamp = blk.timestamp;
 		responce.prev_hash = Common::podToHex(blk.previousBlockHash);
 		responce.nonce = blk.nonce;

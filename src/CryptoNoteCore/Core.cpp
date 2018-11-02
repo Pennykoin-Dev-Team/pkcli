@@ -109,10 +109,6 @@ namespace CryptoNote {
 	size_t core::get_alternative_blocks_count() {
 		return m_blockchain.getAlternativeBlocksCount();
 	}
-
-std::time_t core::getStartTime() const {
-  return start_time;
-}
 	//-----------------------------------------------------------------------------------------------
 	bool core::init(const CoreConfig& config, const MinerConfig& minerConfig, bool load_existing) {
 		m_config_folder = config.configFolder;
@@ -215,7 +211,6 @@ std::time_t core::getStartTime() const {
 		st_inf.top_block_id_str = Common::podToHex(m_blockchain.getTailId());
 		return true;
 	}
-
 
 	bool core::check_tx_semantic(const Transaction& tx, bool keeped_by_block) {
 		if (!tx.inputs.size()) {
@@ -920,26 +915,25 @@ std::time_t core::getStartTime() const {
 	}
 
 	bool core::getTransactionsByPaymentId(const Crypto::Hash& paymentId, std::vector<Transaction>& transactions) {
-std::vector<Crypto::Hash> blockchainTransactionHashes;
-	m_blockchain.getTransactionIdsByPaymentId(paymentId, blockchainTransactionHashes);
-	
-	std::vector<Crypto::Hash> poolTransactionHashes;
-	m_mempool.getTransactionIdsByPaymentId(paymentId, poolTransactionHashes);
-	
-	std::list<Transaction> txs;
-	std::list<Crypto::Hash> missed_txs;
-	if (!poolTransactionHashes.empty()) {
+		std::vector<Crypto::Hash> blockchainTransactionHashes;
+		if (!m_blockchain.getTransactionIdsByPaymentId(paymentId, blockchainTransactionHashes)) {
+			return false;
+		}
+		std::vector<Crypto::Hash> poolTransactionHashes;
+		if (!m_mempool.getTransactionIdsByPaymentId(paymentId, poolTransactionHashes)) {
+			return false;
+		}
+		std::list<Transaction> txs;
+		std::list<Crypto::Hash> missed_txs;
 		blockchainTransactionHashes.insert(blockchainTransactionHashes.end(), poolTransactionHashes.begin(), poolTransactionHashes.end());
-	}
-	if (blockchainTransactionHashes.empty()) {
-		return false;
-	}
-	getTransactions(blockchainTransactionHashes, txs, missed_txs, true);
-	if (missed_txs.size() > 0) {
-		return false;
-	}
-	transactions.insert(transactions.end(), txs.begin(), txs.end());
-	return true;
+
+		getTransactions(blockchainTransactionHashes, txs, missed_txs, true);
+		if (missed_txs.size() > 0) {
+			return false;
+		}
+
+		transactions.insert(transactions.end(), txs.begin(), txs.end());
+		return true;
 	}
 
 	std::error_code core::executeLocked(const std::function<std::error_code()>& func) {
@@ -973,14 +967,12 @@ std::vector<Crypto::Hash> blockchainTransactionHashes;
 		return m_blockchain.depositInterestAtHeight(height);
 	}
 
-
 	bool core::handleIncomingTransaction(const Transaction& tx, const Crypto::Hash& txHash, size_t blobSize, tx_verification_context& tvc, bool keptByBlock) {
 		if (!check_tx_syntax(tx)) {
 			logger(INFO) << "WRONG TRANSACTION BLOB, Failed to check tx " << txHash << " syntax, rejected";
 			tvc.m_verification_failed = true;
 			return false;
 		}
-
 
 		if (!check_tx_semantic(tx, keptByBlock)) {
 			logger(INFO) << "WRONG TRANSACTION BLOB, Failed to check tx " << txHash << " semantic, rejected";

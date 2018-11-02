@@ -93,7 +93,6 @@ struct TransactionParameters {
   std::vector<std::string> sourceAddresses;
   std::vector<WalletOrder> destinations;
   uint64_t fee = 0;
-   uint64_t ttl = 0;
   uint64_t mixIn = 0;
   std::string extra;
   uint64_t unlockTimestamp = 0;
@@ -151,7 +150,7 @@ public:
   virtual std::vector<WalletTransactionWithTransfers> getUnconfirmedTransactions() const = 0;
   virtual std::vector<size_t> getDelayedTransactionIds() const = 0;
 
- virtual size_t transfer(const TransactionParameters& sendingTransaction, Crypto::SecretKey &transactionSK) = 0;
+  virtual size_t transfer(const TransactionParameters& sendingTransaction) = 0;
 
   virtual size_t makeTransaction(const TransactionParameters& sendingTransaction) = 0;
   virtual void commitTransaction(size_t transactionId) = 0;

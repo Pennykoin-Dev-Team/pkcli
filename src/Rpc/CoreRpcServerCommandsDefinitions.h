@@ -261,10 +261,8 @@ namespace CryptoNote {
 			uint64_t grey_peerlist_size;
 			uint32_t last_known_block_index;
 			uint64_t full_deposit_amount;
-		
 			uint64_t full_deposit_interest;
-			  uint8_t block_major_version;
-	std::string already_generated_coins;
+
 			void serialize(ISerializer &s) {
 				KV_MEMBER(status)
 					KV_MEMBER(version)
@@ -278,8 +276,6 @@ namespace CryptoNote {
 					KV_MEMBER(white_peerlist_size)
 					KV_MEMBER(grey_peerlist_size)
 					KV_MEMBER(last_known_block_index)
-				    KV_MEMBER(block_major_version)
-  				    KV_MEMBER(already_generated_coins)
 					KV_MEMBER(full_deposit_amount)
 					KV_MEMBER(full_deposit_interest)
 			}
@@ -386,7 +382,6 @@ namespace CryptoNote {
 		bool orphan_status;
 		uint64_t height;
 		uint64_t depth;
-		uint64_t deposits;
 		std::string hash;
 		difficulty_type difficulty;
 		uint64_t reward;
@@ -397,7 +392,6 @@ namespace CryptoNote {
 				KV_MEMBER(timestamp)
 				KV_MEMBER(prev_hash)
 				KV_MEMBER(nonce)
-				 KV_MEMBER(deposits)
 				KV_MEMBER(orphan_status)
 				KV_MEMBER(height)
 				KV_MEMBER(depth)
@@ -446,7 +440,7 @@ namespace CryptoNote {
 				KV_MEMBER(paymentId)
 				KV_MEMBER(mixin)
 				KV_MEMBER(fee)
-				 KV_MEMBER(confirmations)
+			 KV_MEMBER(confirmations)
 				KV_MEMBER(amount_out)
 		}
 	};

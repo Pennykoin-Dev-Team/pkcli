@@ -693,7 +693,7 @@ namespace CryptoNote {
 		return bounds;
 	}
 
-size_t WalletGreen::transfer(const TransactionParameters& transactionParameters, Crypto::SecretKey& transactionSK) {
+	size_t WalletGreen::transfer(const TransactionParameters& transactionParameters) {
 		Tools::ScopeExit releaseContext([this] {
 			m_dispatcher.yield();
 		});
@@ -704,7 +704,7 @@ size_t WalletGreen::transfer(const TransactionParameters& transactionParameters,
 		throwIfTrackingMode();
 		throwIfStopped();
 
-	return doTransfer(transactionParameters, transactionSK);
+		return doTransfer(transactionParameters);
 	}
 
 	void WalletGreen::prepareTransaction(std::vector<WalletOuts>&& wallets,
@@ -715,8 +715,7 @@ size_t WalletGreen::transfer(const TransactionParameters& transactionParameters,
 		uint64_t unlockTimestamp,
 		const DonationSettings& donation,
 		const CryptoNote::AccountPublicAddress& changeDestination,
-		 PreparedTransaction& preparedTransaction,
-  Crypto::SecretKey& transactionSK) {
+		PreparedTransaction& preparedTransaction) {
 		preparedTransaction.destinations = convertOrdersToTransfers(orders);
 		preparedTransaction.neededMoney = countNeededMoney(preparedTransaction.destinations, fee);
 
@@ -752,7 +751,7 @@ size_t WalletGreen::transfer(const TransactionParameters& transactionParameters,
 			decomposedOutputs.emplace_back(std::move(splittedChange));
 		}
 
-		 preparedTransaction.transaction = makeTransaction(decomposedOutputs, keysInfo, extra, unlockTimestamp, transactionSK);
+		preparedTransaction.transaction = makeTransaction(decomposedOutputs, keysInfo, extra, unlockTimestamp);
 	}
 
 	void WalletGreen::validateTransactionParameters(const TransactionParameters& transactionParameters) {
@@ -798,7 +797,7 @@ size_t WalletGreen::transfer(const TransactionParameters& transactionParameters,
 		}
 	}
 
-size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameters, Crypto::SecretKey& transactionSK) {
+	size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameters) {
 		validateTransactionParameters(transactionParameters);
 		CryptoNote::AccountPublicAddress changeDestination = getChangeDestination(transactionParameters.changeDestination, transactionParameters.sourceAddresses);
 
@@ -819,8 +818,7 @@ size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameter
 			transactionParameters.unlockTimestamp,
 			transactionParameters.donation,
 			changeDestination,
-		 preparedTransaction,
-    transactionSK);
+			preparedTransaction);
 
 		return validateSaveAndSendTransaction(*preparedTransaction.transaction, preparedTransaction.destinations, false, true);
 	}
@@ -846,7 +844,6 @@ size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameter
 		else {
 			wallets = pickWalletsWithMoney();
 		}
-		 Crypto::SecretKey transactionSK;
 
 		PreparedTransaction preparedTransaction;
 		prepareTransaction(
@@ -858,8 +855,7 @@ size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameter
 			sendingTransaction.unlockTimestamp,
 			sendingTransaction.donation,
 			changeDestination,
-		    preparedTransaction,
-    transactionSK);
+			preparedTransaction);
 
 		return validateSaveAndSendTransaction(*preparedTransaction.transaction, preparedTransaction.destinations, false, false);
 	}
@@ -1247,12 +1243,9 @@ size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameter
 	}
 
 	std::unique_ptr<CryptoNote::ITransaction> WalletGreen::makeTransaction(const std::vector<ReceiverAmounts>& decomposedOutputs,
-		 std::vector<InputInfo>& keysInfo,
-		  const std::string& extra, 
-		  uint64_t unlockTimestamp, 
-		  Crypto::SecretKey &transactionSK) {
+		std::vector<InputInfo>& keysInfo, const std::string& extra, uint64_t unlockTimestamp) {
 		std::unique_ptr<ITransaction> tx = createTransaction();
-        tx->getTransactionSecretKey(transactionSK);
+
 		typedef std::pair<const AccountPublicAddress*, uint64_t> AmountToAddress;
 		std::vector<AmountToAddress> amountsToAddresses;
 		for (const auto& output : decomposedOutputs) {
@@ -2119,8 +2112,7 @@ size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameter
 			ReceiverAmounts decomposedOutputs = decomposeFusionOutputs(inputsAmount);
 			assert(decomposedOutputs.amounts.size() <= MAX_FUSION_OUTPUT_COUNT);
 
-   Crypto::SecretKey transactionSK;
-    fusionTransaction = makeTransaction(std::vector<ReceiverAmounts>{decomposedOutputs}, keysInfo, "", 0, transactionSK);
+			fusionTransaction = makeTransaction(std::vector<ReceiverAmounts>{decomposedOutputs}, keysInfo, "", 0);
 
 			transactionSize = getTransactionSize(*fusionTransaction);
 

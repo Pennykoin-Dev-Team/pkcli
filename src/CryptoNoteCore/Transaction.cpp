@@ -149,7 +149,7 @@ namespace CryptoNote {
 		secretKey = txKeys.secretKey;
 	}
 
-  TransactionImpl::TransactionImpl(const BinaryArray& ba) {
+TransactionImpl::TransactionImpl(const BinaryArray& ba) {
     if (!fromBinaryArray(transaction, ba)) {
       throw std::runtime_error("Invalid transaction data");
     }
@@ -157,7 +157,6 @@ namespace CryptoNote {
     extra.parse(transaction.extra);
     transactionHash = getBinaryArrayHash(ba); // avoid serialization if we already have blob
   }
-
 
 	TransactionImpl::TransactionImpl(const CryptoNote::Transaction& tx) : transaction(tx) {
 		extra.parse(transaction.extra);

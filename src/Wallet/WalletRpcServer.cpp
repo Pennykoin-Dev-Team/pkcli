@@ -1,6 +1,10 @@
 #include "WalletRpcServer.h"
 
 #include <fstream>
+
+#include "Common/CommandLine.h"
+#include "Common/StringTools.h"
+#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
 #include "Common/CommandLine.h"
 #include "Common/StringTools.h"
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
@@ -21,10 +25,6 @@
 #include "Common/CommandLine.h"
 #include "Common/StringTools.h"
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/Account.h"
-#include "crypto/hash.h"
-#include "WalletLegacy/WalletHelper.h"
-// #include "wallet_errors.h"
 
 #include "Rpc/JsonRpc.h"
 
@@ -108,12 +108,11 @@ namespace Tools {
 				{ "getbalance", makeMemberMethod(&wallet_rpc_server::on_getbalance) },
 				{ "transfer", makeMemberMethod(&wallet_rpc_server::on_transfer) },
 				{ "store", makeMemberMethod(&wallet_rpc_server::on_store) },
-				      { "get_height", makeMemberMethod(&wallet_rpc_server::on_get_height) },
 				{ "get_messages", makeMemberMethod(&wallet_rpc_server::on_get_messages) },
+				 { "create_integrated", makeMemberMethod(&wallet_rpc_server::on_create_integrated) },  
 				{ "get_payments", makeMemberMethod(&wallet_rpc_server::on_get_payments) },
 				{ "get_transfers", makeMemberMethod(&wallet_rpc_server::on_get_transfers) },
 				{ "get_height", makeMemberMethod(&wallet_rpc_server::on_get_height) },
-			 { "create_integrated", makeMemberMethod(&wallet_rpc_server::on_create_integrated) },  
 				{ "reset", makeMemberMethod(&wallet_rpc_server::on_reset) }
 			};
 
@@ -142,6 +141,30 @@ namespace Tools {
 		res.unlocked_balance = res.available_balance;
 		return true;
 	}
+	bool wallet_rpc_server::on_create_integrated(const wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::request& req, wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::response& res) 
+{
+  if (!req.payment_id.empty() && !req.address.empty()) 
+  {
+    std::string payment_id_str = req.payment_id;
+    std::string address_str = req.address;
+    uint64_t prefix;
+    CryptoNote::AccountPublicAddress addr;
+    /* get the spend and view public keys from the address */
+    const bool valid = CryptoNote::parseAccountAddressString(prefix, 
+                                                            addr,
+                                                            address_str);
+    CryptoNote::BinaryArray ba;
+    CryptoNote::toBinaryArray(addr, ba);
+    std::string keys = Common::asString(ba);
+    /* create the integrated address the same way you make a public address */
+    std::string integratedAddress = Tools::Base58::encode_addr (
+        CryptoNote::parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+        payment_id_str + keys
+    );
+    res.integrated_address = integratedAddress;
+  }
+  return true;
+}
 	//------------------------------------------------------------------------------------------------------------------------------
 	bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::request& req, wallet_rpc::COMMAND_RPC_TRANSFER::response& res) {
 		std::vector<CryptoNote::WalletLegacyTransfer> transfers;
@@ -211,11 +234,6 @@ namespace Tools {
 		}
 		return true;
 	}
-bool wallet_rpc_server::on_get_outputs(const wallet_rpc::COMMAND_RPC_GET_OUTPUTS::request& req, wallet_rpc::COMMAND_RPC_GET_OUTPUTS::response& res) {
-  res.num_unlocked_outputs = m_wallet.getNumUnlockedOutputs();
-  return true;
-}
-
 	//------------------------------------------------------------------------------------------------------------------------------
 	bool wallet_rpc_server::on_store(const wallet_rpc::COMMAND_RPC_STORE::request& req, wallet_rpc::COMMAND_RPC_STORE::response& res) {
 		try {
@@ -278,34 +296,6 @@ bool wallet_rpc_server::on_get_outputs(const wallet_rpc::COMMAND_RPC_GET_OUTPUTS
 
 		return true;
 	}
-/* ----------------------------------------------------------------------------------------------------------- */
-/* CREATE INTEGRATED */
-/* takes an address and payment ID and returns an integrated address */
-bool wallet_rpc_server::on_create_integrated(const wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::request& req, wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::response& res) 
-{
-  if (!req.payment_id.empty() && !req.address.empty()) 
-  {
-    std::string payment_id_str = req.payment_id;
-    std::string address_str = req.address;
-    uint64_t prefix;
-    CryptoNote::AccountPublicAddress addr;
-    /* get the spend and view public keys from the address */
-    const bool valid = CryptoNote::parseAccountAddressString(prefix, 
-                                                            addr,
-                                                            address_str);
-    CryptoNote::BinaryArray ba;
-    CryptoNote::toBinaryArray(addr, ba);
-    std::string keys = Common::asString(ba);
-    /* create the integrated address the same way you make a public address */
-    std::string integratedAddress = Tools::Base58::encode_addr (
-        CryptoNote::parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-        payment_id_str + keys
-    );
-    res.integrated_address = integratedAddress;
-  }
-  return true;
-}
-/* --------------------------------------------------------------------------------- */
 
 	bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res) {
 		res.transfers.clear();

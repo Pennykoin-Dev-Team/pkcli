@@ -41,7 +41,7 @@ namespace CryptoNote {
 		virtual void reset() override;
 
 		virtual void save(std::ostream& destination, bool saveDetailed = true, bool saveCache = true) override;
- virtual size_t getNumUnlockedOutputs() override;
+
 		virtual std::error_code changePassword(const std::string& oldPassword, const std::string& newPassword) override;
 
 		virtual std::string getAddress() override;
@@ -54,6 +54,7 @@ namespace CryptoNote {
 		virtual size_t getTransactionCount() override;
 		virtual size_t getTransferCount() override;
 		virtual size_t getDepositCount() override;
+
 		virtual TransactionId findTransactionByTransferId(TransferId transferId) override;
 
 		virtual bool getTransaction(TransactionId transactionId, WalletLegacyTransaction& transaction) override;
