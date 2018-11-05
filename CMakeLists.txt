@@ -25,7 +25,7 @@ if(APPLE)
   enable_language(ASM)
 endif()
 
-file(COPY ".pennykoin" DESTINATION $ENV{HOME})
+#file(COPY ".pennykoin" DESTINATION $ENV{HOME})
 if(MSVC)
   include_directories(src/Platform/Windows)
 elseif(APPLE)
