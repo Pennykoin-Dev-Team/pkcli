@@ -224,7 +224,32 @@ struct COMMAND_RPC_CREATE_INTEGRATED
 				}
 			};
 		};
+struct COMMAND_RPC_GEN_PAYMENT_ID
+	{
+		typedef CryptoNote::EMPTY_STRUCT request;
+		struct response
+		{
+			std::string payment_id;
 
+			void serialize(ISerializer& s)
+			{
+				KV_MEMBER(payment_id)
+			}
+		};
+};
+	struct COMMAND_RPC_GET_ADDRESS
+	{
+		typedef CryptoNote::EMPTY_STRUCT request;
+		struct response
+		{
+			std::string address;
+
+			void serialize(ISerializer& s)
+			{
+				KV_MEMBER(address)
+			}
+		};
+};
 		struct COMMAND_RPC_GET_HEIGHT {
 			typedef CryptoNote::EMPTY_STRUCT request;
 
