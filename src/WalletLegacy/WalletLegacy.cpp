@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "WalletLegacy/WalletHelper.h"
+#include <Common/Base58.h>
 #include "WalletLegacy/WalletLegacySerialization.h"
 #include "WalletLegacy/WalletLegacySerializer.h"
 #include "WalletLegacy/WalletUtils.h"
@@ -374,6 +375,37 @@ namespace CryptoNote {
 
 		return m_currency.accountAddressAsString(m_account);
 	}
+
+std::string WalletLegacy::sign(const std::string &data) {
+  Crypto::Hash hash;
+  Crypto::cn_fast_hash(data.data(), data.size(), hash);
+  const CryptoNote::AccountKeys &keys = m_account.getAccountKeys();
+  Crypto::Signature signature;
+  Crypto::generate_signature(hash, keys.address.spendPublicKey, keys.spendSecretKey, signature);
+  return std::string("SigV1") + Tools::Base58::encode(std::string((const char *)&signature, sizeof(signature)));
+}
+
+bool WalletLegacy::verify(const std::string &data, const CryptoNote::AccountPublicAddress &address, const std::string &signature) {
+  const size_t header_len = strlen("SigV1");
+  if (signature.size() < header_len || signature.substr(0, header_len) != "SigV1") {
+    std::cout << "Signature header check error";
+    return false;
+  }
+  Crypto::Hash hash;
+  Crypto::cn_fast_hash(data.data(), data.size(), hash);
+  std::string decoded;
+  if (!Tools::Base58::decode(signature.substr(header_len), decoded)) {
+    std::cout <<"Signature decoding error";
+    return false;
+  }
+  Crypto::Signature s;
+  if (sizeof(s) != decoded.size()) {
+    std::cout << "Signature decoding error";
+    return false;
+  }
+  memcpy(&s, decoded.data(), sizeof(s));
+  return Crypto::check_signature(hash, address.spendPublicKey, s);
+}
 
 	uint64_t WalletLegacy::actualBalance() {
 		std::unique_lock<std::mutex> lock(m_cacheMutex);

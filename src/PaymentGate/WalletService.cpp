@@ -27,7 +27,6 @@
 #include "Wallet/WalletErrors.h"
 #include "Wallet/WalletUtils.h"
 #include "WalletServiceErrorCategory.h"
-
 namespace PaymentService {
 	namespace {
 		bool checkPaymentId(const std::string& paymentId) {
