@@ -603,7 +603,8 @@ m_walletSynchronized(false),
 m_consoleHandler.setHandler("sign", boost::bind(&simple_wallet::sign, this, _1), "Sign the contents of a file");
   m_consoleHandler.setHandler("verify", boost::bind(&simple_wallet::verify, this, _1), "Verify a signature on the contents of a file");
   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
-  m_consoleHandler.setHandler("inc_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
+  m_consoleHandler.setHandler("transfers_in", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
+   m_consoleHandler.setHandler("transfers_out", boost::bind(&simple_wallet::show_outgoing_transfers, this, _1), "Show outgoing transfers");
   m_consoleHandler.setHandler("transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "transfers <height> - Show all known transfers from a certain (optional) block height");
   m_consoleHandler.setHandler("transfers_by_ID", boost::bind(&simple_wallet::show_payments, this, _1), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
   m_consoleHandler.setHandler("height", boost::bind(&simple_wallet::show_blockchain_height, this, _1), "Show blockchain height");
@@ -1031,6 +1032,30 @@ void simple_wallet::log_incorrect_words(std::vector<std::string> words) {
     }
   }
 }
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+bool simple_wallet::show_outgoing_transfers(const std::vector<std::string>& args) {
+  bool hasTransfers = false;
+  size_t transactionsCount = m_wallet->getTransactionCount();
+  for (size_t transactionNumber = 0; transactionNumber < transactionsCount; ++transactionNumber) {
+    WalletLegacyTransaction txInfo;
+    m_wallet->getTransaction(transactionNumber, txInfo);
+    if (txInfo.totalAmount > 0) continue;
+    hasTransfers = true;
+    logger(INFO) << "        Amount       \t                              TX ID";
+  logger(INFO, BRIGHT_MAGENTA) << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount) << '\t' << Common::podToHex(txInfo.hash);
+
+  for (TransferId id = txInfo.firstTransferId; id < txInfo.firstTransferId + txInfo.transferCount; ++id) {
+    WalletLegacyTransfer tr;
+    m_wallet->getTransfer(id, tr);
+    logger(INFO, MAGENTA) << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(-tr.amount) << '\t' << tr.address;
+  }
+  }
+
+  if (!hasTransfers) success_msg_writer() << "No outgoing transfers";
+  return true;
+}
+
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::is_valid_mnemonic(std::string &mnemonic_phrase, Crypto::SecretKey &private_spend_key) {
   static std::string languages[] = {"English"};
