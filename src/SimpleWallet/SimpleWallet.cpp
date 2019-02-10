@@ -1410,9 +1410,9 @@ bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::ve
    std::string spend_public_key = Common::podToHex(keys.address.spendPublicKey);
    keys.spendSecretKey = boost::value_initialized<Crypto::SecretKey>();
  success_msg_writer(true) << "Private View keyy: " << Common::podToHex(keys.viewSecretKey);
-  std::cout << "  " << ENDL
+  std::cout << "  " << ENDL;
    success_msg_writer(true) << "Tracking Key: " << spend_public_key << Common::podToHex(keys.address.viewPublicKey) << Common::podToHex(keys.spendSecretKey) << Common::podToHex(keys.viewSecretKey);
-   std::cout << "  " << ENDL
+   std::cout << "  " << ENDL;
   success_msg_writer(true) << "Private key: " <<  Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
     std::string(reinterpret_cast<char*>(&keys), sizeof(keys)));
     Crypto::PublicKey unused_dummy_variable;

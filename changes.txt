@@ -7,3 +7,5 @@ added sign/verify message to help prevent github releases (Jerry will post his P
 Chain can not rollback further than spendable age to disincentivize 51 attacks
 transfers can be tracked by incoming, outgoing, & optional blockheight
 private viewkey shown in showkeys also
+extra check to verify signature
+zawy evil bug fix
