@@ -28,6 +28,7 @@ file(GLOB_RECURSE Wallet Wallet/*)
 file(GLOB_RECURSE WalletLegacy WalletLegacy/*)
 
 file(GLOB_RECURSE JsonRpcServer JsonRpcServer/*)
+file(GLOB_RECURSE PaymentGateService PaymentGateService/*)
 file(GLOB_RECURSE PaymentGate PaymentGate/*)
 
 source_group("" FILES $${Common} ${Crypto} ${CryptoNoteCore} ${CryptoNoteProtocol} ${Daemon} ${JsonRpcServer} ${Http} ${Logging} ${NodeRpcProxy} ${P2p} ${Rpc} ${Serialization} ${SimpleWallet} ${System} ${Transfers} ${Wallet} ${WalletLegacy})
@@ -51,7 +52,7 @@ add_library(JsonRpcServer ${JsonRpcServer})
 
 add_executable(Daemon ${Daemon})
 add_executable(SimpleWallet ${SimpleWallet})
-
+add_executable(PaymentGateService ${PaymentGateService})
 
 
 if (MSVC)
@@ -61,7 +62,7 @@ endif ()
 set( CryptoNoteCore Logging Crypto P2P Rpc Http Serialization Common System ${Boost_LIBRARIES})
 target_link_libraries(Daemon CryptoNoteCore P2P Rpc System Http Logging Common Crypto upnpc-static BlockchainExplorer ${Boost_LIBRARIES} Serialization)
 target_link_libraries(SimpleWallet Wallet NodeRpcProxy Transfers Rpc Http CryptoNoteCore System Logging Common Crypto ${Boost_LIBRARIES} Serialization)
-target_link_libraries(PaymentGate JsonRpcServer Wallet NodeRpcProxy Transfers CryptoNoteCore Crypto P2P Rpc Http System Logging Common InProcessNode upnpc-static BlockchainExplorer ${Boost_LIBRARIES} Serialization)
+target_link_libraries(PaymentGateService PaymentGate JsonRpcServer Wallet NodeRpcProxy Transfers CryptoNoteCore Crypto P2P Rpc Http System Logging Common InProcessNode upnpc-static BlockchainExplorer ${Boost_LIBRARIES} Serialization)
 target_link_libraries(CryptoNoteCore Rpc System Http Logging Common Crypto ${Boost_LIBRARIES} Serialization)
 
 add_dependencies(Rpc version)
@@ -71,5 +72,6 @@ add_dependencies(SimpleWallet version)
 add_dependencies(P2P version)
 
 
-set_property(TARGET SimpleWallet PROPERTY OUTPUT_NAME "PKCli")
-set_property(TARGET Daemon PROPERTY OUTPUT_NAME "PKNode")
+set_property(TARGET SimpleWallet PROPERTY OUTPUT_NAME "pkcli")
+set_property(TARGET Daemon PROPERTY OUTPUT_NAME "pknode")
+set_property(TARGET PaymentGateService PROPERTY OUTPUT_NAME "pkservice")

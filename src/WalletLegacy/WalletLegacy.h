@@ -13,6 +13,8 @@
 #include "CryptoNoteCore/TransactionExtra.h"
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
 #include "CryptoNoteCore/Currency.h"
+#include "CryptoNote.h"
+
 #include "WalletLegacy/WalletUserTransactionsCache.h"
 #include "WalletLegacy/WalletUnconfirmedTransactions.h"
 #include "WalletLegacy/WalletTransactionSender.h"
@@ -50,6 +52,8 @@ namespace CryptoNote {
 		virtual uint64_t pendingBalance() override;
 		virtual uint64_t actualDepositBalance() override;
 		virtual uint64_t pendingDepositBalance() override;
+		 virtual std::string sign(const std::string &data) override;
+  virtual bool verify(const std::string &data, const CryptoNote::AccountPublicAddress &address, const std::string &signature) override;
 
 		virtual size_t getTransactionCount() override;
 		virtual size_t getTransferCount() override;
