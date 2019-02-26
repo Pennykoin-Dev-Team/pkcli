@@ -1,3 +1,4 @@
 Fresh new rebase of citadel ( bitcedi)
 integrated the much more advanced pk simplewallet
-rebased crypto to ccx code, have lite available
+rebased crypto to ccx code, CN lite is active in code, just needs to be deployed
+

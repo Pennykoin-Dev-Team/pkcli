@@ -666,7 +666,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
     << "      _____ _____ _____ _____ __ __ _____ _____ _____ _____ " << ENDL
     << "     |  _  |   __|   | |   | |  |  |  |  |     |     |   | |" << ENDL
     << "     |   __|   __| | | | | | |_   _|    -|  |  |-   -| | | |" << ENDL
-    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|   CLI WALLET  v 3.2.X" << ENDL
+    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|   CLI WALLET  3.4.A" << ENDL
      << "  " << ENDL;
     std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[T]racking wallet import\n[E]xit.\n";
     char c;
