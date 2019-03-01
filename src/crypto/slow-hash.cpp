@@ -1,5 +1,7 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
-// Copyright (c) 2018 The Circle Foundation
+// Copyright (c) 2014-2017 XDN developers
+// Copyright (c) 2016-2017 BXC developers
+// Copyright (c) 2017 UltraNote developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +9,7 @@
 
 #include "hash.h"
 
-#ifdef _WIN32
+#if defined(WIN32)
 #include <Windows.h>
 #else
 #include <sys/mman.h>
@@ -21,7 +23,7 @@ namespace Crypto {
     MAP_SIZE = SLOW_HASH_CONTEXT_SIZE + ((-SLOW_HASH_CONTEXT_SIZE) & 0xfff)
   };
 
-#ifdef _WIN32
+#if defined(WIN32)
 
   cn_context::cn_context() {
     data = VirtualAlloc(nullptr, MAP_SIZE, MEM_COMMIT, PAGE_READWRITE);
@@ -39,7 +41,7 @@ namespace Crypto {
 #else
 
   cn_context::cn_context() {
-#if !defined(__APPLE__) && !defined(__FreeBSD__)
+#if !defined(__APPLE__)
     data = mmap(nullptr, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
 #else
     data = mmap(nullptr, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
@@ -53,7 +55,7 @@ namespace Crypto {
   cn_context::~cn_context() {
     if (munmap(data, MAP_SIZE) != 0) {
     //  throw bad_alloc();
-		std::terminate();
+        std::terminate();
     }
   }
 
