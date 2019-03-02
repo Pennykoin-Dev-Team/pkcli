@@ -314,8 +314,7 @@ m_is_in_checkpoint_zone(false),
 m_checkpoints(logger),
 m_upgradeDetectorV2(currency, m_blocks, BLOCK_MAJOR_VERSION_2, logger),
 m_upgradeDetectorV3(currency, m_blocks, BLOCK_MAJOR_VERSION_3, logger),
-m_upgradeDetectorV4(currency, m_blocks, BLOCK_MAJOR_VERSION_4, logger),
-m_upgradeDetectorV5(currency, m_blocks, BLOCK_MAJOR_VERSION_5, logger) {
+m_upgradeDetectorV4(currency, m_blocks, BLOCK_MAJOR_VERSION_4, logger) {
 
   m_outputs.set_deleted_key(0);
   m_multisignatureOutputs.set_deleted_key(0);
@@ -466,10 +465,7 @@ bool Blockchain::init(const std::string& config_folder, bool load_existing) {
     logger(ERROR, BRIGHT_RED) << "Failed to initialize upgrade detector";
     return false;
   }
-    if (!m_upgradeDetectorV5.init()) {
-    logger(ERROR, BRIGHT_RED) << "Failed to initialize upgrade detector";
-    return false;
-  }
+
   update_next_comulative_size_limit();
 
   uint64_t timestamp_diff = time(NULL) - m_blocks.back().bl.timestamp;
@@ -667,7 +663,7 @@ difficulty_type Blockchain::getDifficultyForNextBlock() {
   std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
   std::vector<uint64_t> timestamps;
   std::vector<difficulty_type> commulative_difficulties;
-  uint8_t BlockMajorVersion = m_blocks.size() >= m_upgradeDetectorV4.upgradeHeight() ? m_upgradeDetectorV4.targetVersion() : BLOCK_MAJOR_VERSION_1;
+  uint8_t BlockMajorVersion = m_blocks.size() >= m_upgradeDetectorV3.upgradeHeight() ? m_upgradeDetectorV3.targetVersion() : BLOCK_MAJOR_VERSION_1;
   size_t offset = m_blocks.size() - std::min(m_blocks.size(), static_cast<uint64_t>((BlockMajorVersion >= BLOCK_MAJOR_VERSION_3 ? m_currency.difficultyBlocksCount2() + 1 : m_currency.difficultyBlocksCount())));
   if (offset == 0) {
     ++offset;
@@ -711,19 +707,12 @@ difficulty_type Blockchain::difficultyAtHeight(uint64_t height) {
 }
 
 uint8_t Blockchain::get_block_major_version_for_height(uint64_t height) const {
-   if (height > m_upgradeDetectorV5.upgradeHeight()) {
-    return m_upgradeDetectorV5.targetVersion();
-
-
-  } else if (height > m_upgradeDetectorV4.upgradeHeight()) {
+   if (height > m_upgradeDetectorV4.upgradeHeight()) {
     return m_upgradeDetectorV4.targetVersion();
-
   } else if (height > m_upgradeDetectorV3.upgradeHeight()) {
     return m_upgradeDetectorV3.targetVersion();
-
-      } else if (height > m_upgradeDetectorV2.upgradeHeight()) {
+  } else if (height > m_upgradeDetectorV2.upgradeHeight()) {
     return m_upgradeDetectorV2.targetVersion();
-
   } else {
     return BLOCK_MAJOR_VERSION_1;
   }
@@ -861,7 +850,7 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<blocks_ext_by_hash::
 difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blocks_ext_by_hash::iterator>& alt_chain, BlockEntry& bei) {
   std::vector<uint64_t> timestamps;
   std::vector<difficulty_type> commulative_difficulties;
-  uint8_t BlockMajorVersion = m_blocks.size() >= m_upgradeDetectorV4.upgradeHeight() ? m_upgradeDetectorV4.targetVersion() : BLOCK_MAJOR_VERSION_1;
+  uint8_t BlockMajorVersion = m_blocks.size() >= m_upgradeDetectorV3.upgradeHeight() ? m_upgradeDetectorV3.targetVersion() : BLOCK_MAJOR_VERSION_1;
   if (alt_chain.size() < (BlockMajorVersion >= BLOCK_MAJOR_VERSION_3 ? m_currency.difficultyBlocksCount2() + 1 : m_currency.difficultyBlocksCount())) {
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
     size_t main_chain_stop_offset = alt_chain.size() ? alt_chain.front()->second.height : bei.height;
@@ -1981,7 +1970,6 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   m_upgradeDetectorV2.blockPushed();
   m_upgradeDetectorV3.blockPushed();
   m_upgradeDetectorV4.blockPushed();
-  m_upgradeDetectorV5.blockPushed();
   update_next_comulative_size_limit();
 
   return true;
@@ -2073,7 +2061,6 @@ void Blockchain::popBlock(const Crypto::Hash& blockHash) {
   m_upgradeDetectorV2.blockPopped();
   m_upgradeDetectorV3.blockPopped();
   m_upgradeDetectorV4.blockPopped();
-  m_upgradeDetectorV5.blockPopped();
 }
 
 bool Blockchain::pushTransaction(BlockEntry& block, const Crypto::Hash& transactionHash, TransactionIndex transactionIndex) {
