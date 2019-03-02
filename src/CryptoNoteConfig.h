@@ -24,6 +24,7 @@ const size_t   CRYPTONOTE_DISPLAY_DECIMAL_POINT              = 2;
 // COIN - number of smallest units in one coin
 const uint64_t COIN                                          = UINT64_C(100);  // pow(10, 8)
 const uint64_t MINIMUM_FEE                                   = UINT64_C(1);     // pow(10, 5)
+const uint64_t MINIMUM_FEE_V2                                = UINT64_C(100);     // pow(10, 5)
 const uint64_t DEFAULT_DUST_THRESHOLD                        = UINT64_C(1);     // pow(10, 5)
 //const uint64_t GENESIS_BLOCK_REWARD							 = UINT64_C(0);
 const uint64_t MAX_TX_MIXIN_SIZE                             = 11;
@@ -62,6 +63,8 @@ const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 16500;
 const uint32_t UPGRADE_HEIGHT_V4                             = 24400;
+const uint32_t UPGRADE_HEIGHT_V4                             = 24400;
+const uint32_t UPGRADE_HEIGHT_V5                             = 200000;
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
 const size_t   UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const size_t   UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
