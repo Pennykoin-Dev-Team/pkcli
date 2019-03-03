@@ -1404,29 +1404,31 @@ void simple_wallet::synchronizationProgressUpdated(uint32_t current, uint32_t to
   }
 }
 //----------------------------------------------------------------------------------------------------
+
 bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
   AccountKeys keys;
   m_wallet->getAccountKeys(keys);
-   std::string spend_public_key = Common::podToHex(keys.address.spendPublicKey);
-   keys.spendSecretKey = boost::value_initialized<Crypto::SecretKey>();
- success_msg_writer(true) << "Private View keyy: " << Common::podToHex(keys.viewSecretKey);
-  std::cout << "  " << ENDL;
-   success_msg_writer(true) << "Tracking Key: " << spend_public_key << Common::podToHex(keys.address.viewPublicKey) << Common::podToHex(keys.spendSecretKey) << Common::podToHex(keys.viewSecretKey);
-   std::cout << "  " << ENDL;
-  success_msg_writer(true) << "Private key: " <<  Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-    std::string(reinterpret_cast<char*>(&keys), sizeof(keys)));
-    Crypto::PublicKey unused_dummy_variable;
+
+  std::string secretKeysData = std::string(reinterpret_cast<char*>(&keys.spendSecretKey), sizeof(keys.spendSecretKey)) + std::string(reinterpret_cast<char*>(&keys.viewSecretKey), sizeof(keys.viewSecretKey));
+  std::string guiKeys = Tools::Base58::encode_addr(CryptoNote::parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX, secretKeysData);
+
+  std::cout << std::endl << "Spend secret key: " << Common::podToHex(keys.spendSecretKey) << std::endl;
+  std::cout << "View secret key: " <<  Common::podToHex(keys.viewSecretKey) << std::endl;
+  std::cout << "GUI key: " <<  guiKeys << std::endl;
+
+  Crypto::PublicKey unused_dummy_variable;
   Crypto::SecretKey deterministic_private_view_key;
+
   AccountBase::generateViewFromSpend(keys.spendSecretKey, deterministic_private_view_key, unused_dummy_variable);
+
   bool deterministic_private_keys = deterministic_private_view_key == keys.viewSecretKey;
+
 /* dont show a mnemonic seed if it is an old non-deterministic wallet */
   if (deterministic_private_keys) {
-    std::cout << "25 Word phrase: " << generate_mnemonic(keys.spendSecretKey) << std::endl;
+    std::cout << "Mnemonic seed: " << generate_mnemonic(keys.spendSecretKey) << std::endl << std::endl;
   }
-  
   return true;
 }
-
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
   success_msg_writer() << "available balance: " << m_currency.formatAmount(m_wallet->actualBalance()) <<
