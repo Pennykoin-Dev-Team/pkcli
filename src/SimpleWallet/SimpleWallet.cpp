@@ -603,6 +603,7 @@ m_walletSynchronized(false),
 m_consoleHandler.setHandler("sign", boost::bind(&simple_wallet::sign, this, _1), "Sign the contents of a file");
   m_consoleHandler.setHandler("verify", boost::bind(&simple_wallet::verify, this, _1), "Verify a signature on the contents of a file");
   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
+  m_consoleHandler.setHandler("unlocked", boost::bind(&simple_wallet::show_num_unlocked_outputs, this, _1), "Show the amount of unlocked outputs for transfers.");
   m_consoleHandler.setHandler("transfers_in", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
    m_consoleHandler.setHandler("transfers_out", boost::bind(&simple_wallet::show_outgoing_transfers, this, _1), "Show outgoing transfers");
   m_consoleHandler.setHandler("transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "transfers <height> - Show all known transfers from a certain (optional) block height");
@@ -1033,6 +1034,16 @@ void simple_wallet::log_incorrect_words(std::vector<std::string> words) {
   }
 }
 //----------------------------------------------------------------------------------------------------
+bool simple_wallet::show_num_unlocked_outputs(const std::vector<std::string>& args) {
+  try {
+    size_t num_unlocked_outputs = m_wallet->getNumUnlockedOutputs();
+    success_msg_writer() << num_unlocked_outputs;
+  } catch (std::exception &e) {
+    fail_msg_writer() << "failed to get outputs: " << e.what();
+  }
+
+  return true;
+}
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_outgoing_transfers(const std::vector<std::string>& args) {
   bool hasTransfers = false;

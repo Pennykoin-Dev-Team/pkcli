@@ -73,6 +73,7 @@ namespace CryptoNote
     bool export_keys(const std::vector<std::string> &args = std::vector<std::string>());
     bool export_tracking_key(const std::vector<std::string> &args = std::vector<std::string>());
     bool transfer(const std::vector<std::string> &args);
+      bool show_num_unlocked_outputs(const std::vector<std::string> &args);
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool save(const std::vector<std::string> &args);
     bool reset(const std::vector<std::string> &args);
