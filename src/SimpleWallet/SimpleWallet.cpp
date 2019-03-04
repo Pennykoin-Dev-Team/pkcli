@@ -1464,6 +1464,13 @@ bool simple_wallet::create_integrated(const std::vector<std::string>& args/* = s
   }
 
   std::string paymentID = args[0];
+    std::regex hexChars("^[0-9a-f]+$");
+  if(paymentID.size() != 64 || !regex_match(paymentID, hexChars))
+  {
+    fail_msg_writer() << "Invalid payment ID";
+    return true;
+  }
+
   std::string address = m_wallet->getAddress();
   uint64_t prefix;
   CryptoNote::AccountPublicAddress addr;

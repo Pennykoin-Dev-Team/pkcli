@@ -58,6 +58,11 @@ const uint64_t CRYPTONOTE_NUMBER_OF_PERIODS_TO_FORGET_TX_DELETED_FROM_POOL = 7; 
 const size_t   FUSION_TX_MAX_SIZE                            = CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE * 30 / 100;
 const size_t   FUSION_TX_MIN_INPUT_COUNT                     = 12;
 const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
+/* P2P Network Configuration Section - This defines our current P2P network version
+and the minimum version for communication between nodes */
+const uint8_t  P2P_CURRENT_VERSION                           = 1;
+const uint8_t  P2P_MINIMUM_VERSION                           = 1;
+const uint8_t  P2P_UPGRADE_WINDOW                            = 2;
 
 const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 16500;
