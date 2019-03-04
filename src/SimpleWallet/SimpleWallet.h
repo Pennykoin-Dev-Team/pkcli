@@ -4,12 +4,9 @@
 #include <future>
 #include <memory>
 #include <mutex>
-
 #include <boost/program_options/variables_map.hpp>
-
 #include "IWalletLegacy.h"
 #include "PasswordContainer.h"
-
 #include "Common/ConsoleHandler.h"
 #include "CryptoNoteCore/CryptoNoteBasicImpl.h"
 #include "CryptoNoteCore/Currency.h"
@@ -62,7 +59,8 @@ namespace CryptoNote
     bool new_wallet(AccountKeys &private_key, const std::string &wallet_file, const std::string& password);
         bool open_wallet(const std::string &wallet_file, const std::string& password);
     bool close_wallet();
-
+bool sign(const std::vector<std::string> &args);
+  bool verify(const std::vector<std::string> &args);
     bool help(const std::vector<std::string> &args = std::vector<std::string>());
     bool exit(const std::vector<std::string> &args);
     bool start_mining(const std::vector<std::string> &args);
@@ -74,9 +72,11 @@ namespace CryptoNote
     bool listTransfers(const std::vector<std::string> &args);
     bool export_keys(const std::vector<std::string> &args = std::vector<std::string>());
     bool transfer(const std::vector<std::string> &args);
+     bool show_outgoing_transfers(const std::vector<std::string> &args); 
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool save(const std::vector<std::string> &args);
     bool reset(const std::vector<std::string> &args);
+      bool generate_payment_id(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
      bool create_integrated(const std::vector<std::string> &args = std::vector<std::string>());
     bool ask_wallet_create_if_needed();
