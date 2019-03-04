@@ -1695,11 +1695,14 @@ bool simple_wallet::transfer(const std::vector<std::string> &args) {
     WalletHelper::IWalletRemoveObserverGuard removeGuard(*m_wallet, sent);
 
 
-    if (cmd.fake_outs_count < 2) {
-      fail_msg_writer() << "Mixin too small, must be above 2";
+    if (cmd.fake_outs_count < 3) {
+      fail_msg_writer() << "Incorrect mixin size. Acceptable mixin is 3-9";
       return true;
     }
-
+    if (cmd.fake_outs_count > 9) {
+      fail_msg_writer() << "Incorrect mixin size. Acceptable mixin is 3-9";
+      return true;
+    }
 
     CryptoNote::TransactionId tx = m_wallet->sendTransaction(cmd.dsts, cmd.fee, extraString, cmd.fake_outs_count, 0, messages, ttl);
     if (tx == WALLET_LEGACY_INVALID_TRANSACTION_ID) {
