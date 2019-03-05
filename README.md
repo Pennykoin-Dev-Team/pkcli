@@ -6,7 +6,7 @@ PK has been tested to compile on Windows 8-10 with VS2013, OSX High Sierra, Ubun
 The legacy branch is tweaked to run on VPS (openvz) with very old kernels. If you cannot get it running, please contact jerry on twitter or discord.
 
 for ubuntu:
-apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev
+    apt-get update && apt-get upgrade -y && apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev git nano
 
 for solus: eopkg install libboost-devel cmake make pkg-config gcc libsodium-devel g++ glibc-devel binutils miniupnpc-devel zeromq-devel unbound-devel readline-devel linux-headers
 
