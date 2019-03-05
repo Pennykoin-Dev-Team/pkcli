@@ -1,5 +1,3 @@
-#pragma once
-
 #include <condition_variable>
 #include <future>
 #include <memory>
@@ -12,12 +10,13 @@
 #include "CryptoNoteCore/Currency.h"
 #include "NodeRpcProxy/NodeRpcProxy.h"
 #include "WalletLegacy/WalletHelper.h"
-
 #include <Logging/LoggerRef.h>
 #include <Logging/LoggerManager.h>
-
 #include <System/Dispatcher.h>
 #include <System/Ipv4Address.h>
+
+
+
 
 namespace CryptoNote
 {
@@ -57,36 +56,36 @@ namespace CryptoNote
     bool new_wallet(const std::string &wallet_file, const std::string& password);
     bool new_wallet(Crypto::SecretKey &secret_key, Crypto::SecretKey &view_key, const std::string &wallet_file, const std::string& password);
     bool new_wallet(AccountKeys &private_key, const std::string &wallet_file, const std::string& password);
-        bool open_wallet(const std::string &wallet_file, const std::string& password);
+    bool new_tracking_wallet(AccountKeys &tracking_key, const std::string &wallet_file, const std::string& password);
+    bool open_wallet(const std::string &wallet_file, const std::string& password);
     bool close_wallet();
-bool sign(const std::vector<std::string> &args);
-  bool verify(const std::vector<std::string> &args);
     bool help(const std::vector<std::string> &args = std::vector<std::string>());
     bool exit(const std::vector<std::string> &args);
-    bool start_mining(const std::vector<std::string> &args);
-    bool stop_mining(const std::vector<std::string> &args);
     bool show_balance(const std::vector<std::string> &args = std::vector<std::string>());
     bool show_incoming_transfers(const std::vector<std::string> &args);
     bool show_payments(const std::vector<std::string> &args);
     bool show_blockchain_height(const std::vector<std::string> &args);
     bool listTransfers(const std::vector<std::string> &args);
+	bool sign(const std::vector<std::string> &args);
+	bool verify(const std::vector<std::string> &args);
+ bool show_outgoing_transfers(const std::vector<std::string> &args);   
+ bool create_integrated(const std::vector<std::string> &args = std::vector<std::string>());
     bool export_keys(const std::vector<std::string> &args = std::vector<std::string>());
+    bool export_tracking_key(const std::vector<std::string> &args = std::vector<std::string>());
     bool transfer(const std::vector<std::string> &args);
-     bool show_outgoing_transfers(const std::vector<std::string> &args); 
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool save(const std::vector<std::string> &args);
     bool reset(const std::vector<std::string> &args);
-      bool generate_payment_id(const std::vector<std::string> &args);
+      bool show_num_unlocked_outputs(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
-     bool create_integrated(const std::vector<std::string> &args = std::vector<std::string>());
+    bool generate_payment_id(const std::vector<std::string> &args);
     bool ask_wallet_create_if_needed();
     std::string resolveAlias(const std::string& aliasUrl);
 
-  void printConnectionError() const;
-   std::string generate_mnemonic(Crypto::SecretKey &);
+    void printConnectionError() const;
+ std::string generate_mnemonic(Crypto::SecretKey &);
     void log_incorrect_words(std::vector<std::string>);
-bool is_valid_mnemonic(std::string &, Crypto::SecretKey &);
-
+    bool is_valid_mnemonic(std::string &, Crypto::SecretKey &);
     //---------------- IWalletLegacyObserver -------------------------
     virtual void initCompleted(std::error_code result) override;
     virtual void externalTransactionCreated(CryptoNote::TransactionId transactionId) override;
@@ -115,7 +114,7 @@ bool is_valid_mnemonic(std::string &, Crypto::SecretKey &);
       {
         auto current_time = std::chrono::system_clock::now();
         if (std::chrono::seconds(m_simple_wallet.currency().difficultyTarget() / 2) < current_time - m_blockchain_height_update_time ||
-          m_blockchain_height <= height) {
+            m_blockchain_height <= height) {
           update_blockchain_height();
           m_blockchain_height = (std::max)(m_blockchain_height, height);
         }
@@ -146,6 +145,7 @@ bool is_valid_mnemonic(std::string &, Crypto::SecretKey &);
     std::string m_generate_new;
     std::string m_import_new;
     std::string m_restore_new;
+     std::string m_track_new;
     std::string m_import_path;
 
     std::string m_daemon_address;
@@ -165,7 +165,7 @@ bool is_valid_mnemonic(std::string &, Crypto::SecretKey &);
     std::unique_ptr<CryptoNote::NodeRpcProxy> m_node;
     std::unique_ptr<CryptoNote::IWalletLegacy> m_wallet;
     refresh_progress_reporter_t m_refresh_progress_reporter;
-
+ bool m_trackingWallet;
     bool m_walletSynchronized;
     std::mutex m_walletSynchronizedMutex;
     std::condition_variable m_walletSynchronizedCV;
