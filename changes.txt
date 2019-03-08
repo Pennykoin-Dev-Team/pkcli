@@ -1,4 +1,9 @@
 Fresh new rebase of citadel ( bitcedi)
 integrated the much more advanced pk simplewallet
-rebased crypto to ccx code, CN lite is active in code, just needs to be deployed
+rebased crypto library to ccx/trtl code, CN lite is active in code, just needs to be deployed
+reimplemented sw mixin limits of 3-9
+simplewallet validates payment id now
+reimplemented menmonics
+fixed broken mnemonics
+set fork height
 
