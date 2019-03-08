@@ -450,6 +450,11 @@ bool WalletLegacy::verify(const std::string &data, const CryptoNote::AccountPubl
 
 		return m_transactionsCache.getTransactionCount();
 	}
+size_t WalletLegacy::getNumUnlockedOutputs() {
+  std::vector<TransactionOutputInformation> outputs;
+  m_transferDetails->getOutputs(outputs, ITransfersContainer::IncludeKeyUnlocked);
+  return outputs.size();
+}
 
 	size_t WalletLegacy::getTransferCount() {
 		std::unique_lock<std::mutex> lock(m_cacheMutex);

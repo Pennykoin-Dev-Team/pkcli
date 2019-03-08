@@ -19,7 +19,7 @@
 #include "Common/SignalHandler.h"
 #include "Mnemonics/electrum-words.cpp"
 #include "Common/StringTools.h"
-	#include "CryptoNoteCore/CryptoNoteTools.h"
+  #include "CryptoNoteCore/CryptoNoteTools.h"
 #include "Common/PathTools.h"
 #include "Common/Util.h"
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
@@ -666,7 +666,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
     << "      _____ _____ _____ _____ __ __ _____ _____ _____ _____ " << ENDL
     << "     |  _  |   __|   | |   | |  |  |  |  |     |     |   | |" << ENDL
     << "     |   __|   __| | | | | | |_   _|    -|  |  |-   -| | | |" << ENDL
-    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|   CLI WALLET  v 3.2.X" << ENDL
+    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|   CLI 3.5.0" << ENDL
      << "  " << ENDL;
     std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[T]racking wallet import\n[E]xit.\n";
     char c;
@@ -700,7 +700,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
       m_generate_new = userInput;
         } else if (c == 't' || c == 'T') {
       m_track_new = userInput;
-	  }else if (c == 'R' || c == 'r') {
+    }else if (c == 'R' || c == 'r') {
      m_restore_new = userInput;
     } else {
       m_wallet_file_arg = userInput;
@@ -1404,29 +1404,31 @@ void simple_wallet::synchronizationProgressUpdated(uint32_t current, uint32_t to
   }
 }
 //----------------------------------------------------------------------------------------------------
+
 bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
   AccountKeys keys;
   m_wallet->getAccountKeys(keys);
-   std::string spend_public_key = Common::podToHex(keys.address.spendPublicKey);
-   keys.spendSecretKey = boost::value_initialized<Crypto::SecretKey>();
- success_msg_writer(true) << "Private View keyy: " << Common::podToHex(keys.viewSecretKey);
-  std::cout << "  " << ENDL;
-   success_msg_writer(true) << "Tracking Key: " << spend_public_key << Common::podToHex(keys.address.viewPublicKey) << Common::podToHex(keys.spendSecretKey) << Common::podToHex(keys.viewSecretKey);
-   std::cout << "  " << ENDL;
-  success_msg_writer(true) << "Private key: " <<  Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-    std::string(reinterpret_cast<char*>(&keys), sizeof(keys)));
-    Crypto::PublicKey unused_dummy_variable;
+
+  std::string secretKeysData = std::string(reinterpret_cast<char*>(&keys.spendSecretKey), sizeof(keys.spendSecretKey)) + std::string(reinterpret_cast<char*>(&keys.viewSecretKey), sizeof(keys.viewSecretKey));
+  std::string guiKeys = Tools::Base58::encode_addr(CryptoNote::parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX, secretKeysData);
+
+  std::cout << std::endl << "Spend secret key: " << Common::podToHex(keys.spendSecretKey) << std::endl;
+  std::cout << "View secret key: " <<  Common::podToHex(keys.viewSecretKey) << std::endl;
+  std::cout << "GUI key: " <<  guiKeys << std::endl;
+
+  Crypto::PublicKey unused_dummy_variable;
   Crypto::SecretKey deterministic_private_view_key;
+
   AccountBase::generateViewFromSpend(keys.spendSecretKey, deterministic_private_view_key, unused_dummy_variable);
+
   bool deterministic_private_keys = deterministic_private_view_key == keys.viewSecretKey;
+
 /* dont show a mnemonic seed if it is an old non-deterministic wallet */
   if (deterministic_private_keys) {
-    std::cout << "25 Word phrase: " << generate_mnemonic(keys.spendSecretKey) << std::endl;
+    std::cout << "Mnemonic seed: " << generate_mnemonic(keys.spendSecretKey) << std::endl << std::endl;
   }
-  
   return true;
 }
-
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
   success_msg_writer() << "available balance: " << m_currency.formatAmount(m_wallet->actualBalance()) <<
@@ -1510,9 +1512,9 @@ bool simple_wallet::listTransfers(const std::vector<std::string>& args) {
     haveBlockHeight = true;
     blockHeight = atoi(blockHeightString.c_str());
   }
-	 size_t transactionsCount = m_wallet->getTransactionCount();
-		
-		for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) 
+   size_t transactionsCount = m_wallet->getTransactionCount();
+    
+    for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) 
   {
     m_wallet->getTransaction(trantransactionNumber, txInfo);
     if (txInfo.state != WalletLegacyTransactionState::Active || txInfo.blockHeight == WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT) {
@@ -1523,7 +1525,7 @@ bool simple_wallet::listTransfers(const std::vector<std::string>& args) {
       printListTransfersHeader(logger);
       haveTransfers = true;
     }
-	 if (haveBlockHeight = false) {
+   if (haveBlockHeight = false) {
       printListTransfersItem(logger, txInfo, *m_wallet, m_currency);
     } else {
       if (txInfo.blockHeight >= blockHeight) {

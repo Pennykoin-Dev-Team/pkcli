@@ -1,11 +1,4 @@
-reimplemented multi-wallet service into mainstream builds
-testing verify transaction with private view key
-fixed tracking code
-moved tracking to showkeys in wallet
-fixed issue where daemon would sometimes freeze on exit
-added sign/verify message to help prevent github releases (Jerry will post his PK wallet publicly, message with release will prove was posted by Jerry or someone with his private keys)
-Chain can not rollback further than spendable age to disincentivize 51 attacks
-transfers can be tracked by incoming, outgoing, & optional blockheight
-private viewkey shown in showkeys also
-extra check to verify signature
-zawy evil bug fix
+Fresh new rebase of citadel ( bitcedi)
+integrated the much more advanced pk simplewallet
+rebased crypto to ccx code, CN lite is active in code, just needs to be deployed
+

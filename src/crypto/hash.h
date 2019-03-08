@@ -1,19 +1,7 @@
 // Copyright (c) 2012-2016, The CryptoNote developers, The Bytecoin developers
-//
-// This file is part of Bytecoin.
-//
-// Bytecoin is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Bytecoin is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright (c) 2018 The Circle Foundation
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
@@ -21,6 +9,31 @@
 
 #include <CryptoTypes.h>
 #include "generic-ops.h"
+
+/* Standard Cryptonight */
+#define CN_PAGE_SIZE                    2097152
+#define CN_SCRATCHPAD                   2097152
+#define CN_ITERATIONS                   1048576
+
+/* Cryptonight Fast */
+#define CN_FAST_PAGE_SIZE               2097152
+#define CN_FAST_SCRATCHPAD              2097152
+#define CN_FAST_ITERATIONS              524288
+
+/* Cryptonight Lite */
+#define CN_LITE_PAGE_SIZE               2097152
+#define CN_LITE_SCRATCHPAD              1048576
+#define CN_LITE_ITERATIONS              524288
+
+/* Cryptonight Dark */
+#define CN_DARK_PAGE_SIZE               524288
+#define CN_DARK_SCRATCHPAD              524288
+#define CN_DARK_ITERATIONS              262144
+
+/* Cryptonight Turtle */
+#define CN_TURTLE_PAGE_SIZE             262144
+#define CN_TURTLE_SCRATCHPAD            262144
+#define CN_TURTLE_ITERATIONS            131072
 
 namespace Crypto {
 
@@ -58,8 +71,74 @@ namespace Crypto {
     friend inline void cn_slow_hash(cn_context &, const void *, size_t, Hash &);
   };
 
+  /* Standard Cryptonight */
+
   inline void cn_slow_hash(cn_context &context, const void *data, size_t length, Hash &hash) {
-	cn_slow_hash(data, length, reinterpret_cast<char *>(&hash));
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS);
+  }
+
+  inline void cn_slow_hash_v1(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS);
+  }
+
+  inline void cn_slow_hash_v2(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS);
+  }
+
+  /* Cryptonight Fast */
+
+  inline void cn_fast_slow_hash_v0(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_FAST_PAGE_SIZE, CN_FAST_SCRATCHPAD, CN_FAST_ITERATIONS);
+  }
+
+  inline void cn_fast_slow_hash_v1(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_FAST_PAGE_SIZE, CN_FAST_SCRATCHPAD, CN_FAST_ITERATIONS);
+  }
+
+  inline void cn_fast_slow_hash_v2(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_FAST_PAGE_SIZE, CN_FAST_SCRATCHPAD, CN_FAST_ITERATIONS);
+  }
+
+  /* Cryptonight Lite */
+
+  inline void cn_lite_slow_hash_v0(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS);
+  }
+
+  inline void cn_lite_slow_hash_v1(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS);
+  }
+
+  inline void cn_lite_slow_hash_v2(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS);
+  }
+
+  /* Cryptonight Dark */
+
+  inline void cn_dark_slow_hash_v0(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  }
+
+  inline void cn_dark_slow_hash_v1(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  }
+
+  inline void cn_dark_slow_hash_v2(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  }
+
+  /* Cryptonight Turtle */
+
+  inline void cn_turtle_slow_hash_v0(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  }
+
+  inline void cn_turtle_slow_hash_v1(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  }
+
+  inline void cn_turtle_slow_hash_v2(cn_context &context, const void *data, size_t length, Hash &hash) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
   }
 
   inline void tree_hash(const Hash *hashes, size_t count, Hash &root_hash) {
