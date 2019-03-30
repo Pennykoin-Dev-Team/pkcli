@@ -330,7 +330,8 @@ bool core::get_block_template(Block& b, const AccountPublicAddress& adr, difficu
       }
     } else {
       b.minorVersion = BLOCK_MINOR_VERSION_0;
-	}
+  }
+
 
     b.previousBlockHash = get_tail_id();
     b.timestamp = time(NULL);
