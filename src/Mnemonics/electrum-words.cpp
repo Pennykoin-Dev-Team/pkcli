@@ -51,19 +51,9 @@
 #include <boost/crc.hpp>
 #include <boost/algorithm/string/join.hpp>
 
-#include "chinese_simplified.h"
+
 #include "english.h"
-#include "dutch.h"
-#include "french.h"
-#include "italian.h"
-#include "german.h"
-#include "spanish.h"
-#include "portuguese.h"
-#include "japanese.h"
-#include "russian.h"
-#include "esperanto.h"
-#include "lojban.h"
-#include "english_old.h"
+
 #include "language_base.h"
 #include "singleton.h"
 
@@ -87,19 +77,8 @@ namespace
   {
     // If there's a new language added, add an instance of it here.
     std::vector<Language::Base*> language_instances({
-      Language::Singleton<Language::Chinese_Simplified>::instance(),
-      Language::Singleton<Language::English>::instance(),
-      Language::Singleton<Language::Dutch>::instance(),
-      Language::Singleton<Language::French>::instance(),
-      Language::Singleton<Language::Spanish>::instance(),
-      Language::Singleton<Language::German>::instance(),
-      Language::Singleton<Language::Italian>::instance(),
-      Language::Singleton<Language::Portuguese>::instance(),
-      Language::Singleton<Language::Japanese>::instance(),
-      Language::Singleton<Language::Russian>::instance(),
-      Language::Singleton<Language::Esperanto>::instance(),
-      Language::Singleton<Language::Lojban>::instance(),
-      Language::Singleton<Language::EnglishOld>::instance()
+    
+      Language::Singleton<Language::English>::instance()
     });
     Language::Base *fallback = NULL;
 
@@ -357,50 +336,6 @@ namespace crypto
       {
         language = Language::Singleton<Language::English>::instance();
       }
-      else if (language_name == "Nederlands")
-      {
-        language = Language::Singleton<Language::Dutch>::instance();
-      }
-      else if (language_name == "Français")
-      {
-        language = Language::Singleton<Language::French>::instance();
-      }
-      else if (language_name == "Español")
-      {
-        language = Language::Singleton<Language::Spanish>::instance();
-      }
-      else if (language_name == "Português")
-      {
-        language = Language::Singleton<Language::Portuguese>::instance();
-      }
-      else if (language_name == "日本語")
-      {
-        language = Language::Singleton<Language::Japanese>::instance();
-      }
-      else if (language_name == "Italiano")
-      {
-        language = Language::Singleton<Language::Italian>::instance();
-      }
-      else if (language_name == "Deutsch")
-      {
-        language = Language::Singleton<Language::German>::instance();
-      }
-      else if (language_name == "русский язык")
-      {
-        language = Language::Singleton<Language::Russian>::instance();
-      }
-      else if (language_name == "简体中文 (中国)")
-      {
-        language = Language::Singleton<Language::Chinese_Simplified>::instance();
-      }
-      else if (language_name == "Esperanto")
-      {
-        language = Language::Singleton<Language::Esperanto>::instance();
-      }
-      else if (language_name == "Lojban")
-      {
-        language = Language::Singleton<Language::Lojban>::instance();
-      }
       else
       {
         return false;
@@ -452,18 +387,8 @@ namespace crypto
     void get_language_list(std::vector<std::string> &languages)
     {
       std::vector<Language::Base*> language_instances({
-        Language::Singleton<Language::German>::instance(),
-        Language::Singleton<Language::English>::instance(),
-        Language::Singleton<Language::Spanish>::instance(),
-        Language::Singleton<Language::French>::instance(),
-        Language::Singleton<Language::Italian>::instance(),
-        Language::Singleton<Language::Dutch>::instance(),
-        Language::Singleton<Language::Portuguese>::instance(),
-        Language::Singleton<Language::Russian>::instance(),
-        Language::Singleton<Language::Japanese>::instance(),
-        Language::Singleton<Language::Chinese_Simplified>::instance(),
-        Language::Singleton<Language::Esperanto>::instance(),
-        Language::Singleton<Language::Lojban>::instance()
+       
+        Language::Singleton<Language::English>::instance()
       });
       for (std::vector<Language::Base*>::iterator it = language_instances.begin();
         it != language_instances.end(); it++)

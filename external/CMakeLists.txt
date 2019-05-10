@@ -4,6 +4,7 @@ set(UPNPC_BUILD_TESTS OFF CACHE BOOL "Build test executables")
 
 add_subdirectory(miniupnpc)
 
+
 if(MSVC)
   set_property(TARGET upnpc-static APPEND_STRING PROPERTY COMPILE_FLAGS " -wd4244 -wd4267")
 elseif(NOT MSVC)

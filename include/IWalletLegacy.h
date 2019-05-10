@@ -121,15 +121,12 @@ public:
   virtual uint64_t pendingBalance() = 0;
   virtual uint64_t actualDepositBalance() = 0;
   virtual uint64_t pendingDepositBalance() = 0;
-
+  virtual size_t getNumUnlockedOutputs() = 0;
   virtual size_t getTransactionCount() = 0;
   virtual size_t getTransferCount() = 0;
   virtual size_t getDepositCount() = 0;
-  virtual size_t getNumUnlockedOutputs() = 0;
-
   virtual TransactionId findTransactionByTransferId(TransferId transferId) = 0;
-   virtual std::string sign(const std::string &data) = 0;
-  virtual bool verify(const std::string &data, const CryptoNote::AccountPublicAddress &address, const std::string &signature) = 0;
+  
   virtual bool getTransaction(TransactionId transactionId, WalletLegacyTransaction& transaction) = 0;
   virtual bool getTransfer(TransferId transferId, WalletLegacyTransfer& transfer) = 0;
   virtual bool getDeposit(DepositId depositId, Deposit& deposit) = 0;

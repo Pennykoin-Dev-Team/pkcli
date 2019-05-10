@@ -1,5 +1,7 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Copyright (c) 2014-2016 SDN developers
+// Copyright (c) 2011-2017 The Cryptonote developers
+// Copyright (c) 2014-2017 XDN developers
+// Copyright (c) 2016-2017 BXC developers
+// Copyright (c) 2017 UltraNote developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -75,9 +77,6 @@ struct CreateAddress {
   struct Request {
     std::string spendSecretKey;
     std::string spendPublicKey;
-    
-    bool reset;
-
 
     void serialize(CryptoNote::ISerializer& serializer);
   };
@@ -114,6 +113,19 @@ struct GetSpendKeys {
 
     void serialize(CryptoNote::ISerializer& serializer);
   };
+};
+
+struct GetMessage {
+    struct Request {
+        std::string privkey;
+        std::string txkey;
+        std::string extra;
+        void serialize(CryptoNote::ISerializer& serializer);
+    };
+    struct Response {
+        std::string message;
+        void serialize(CryptoNote::ISerializer& serializer);
+    };
 };
 
 struct GetBalance {
@@ -167,6 +179,17 @@ struct GetTransactionHashes {
   struct Response {
     std::vector<TransactionHashesInBlockRpcInfo> items;
 
+    void serialize(CryptoNote::ISerializer& serializer);
+  };
+};
+struct CreateIntegrated {
+  struct Request {
+    std::string address;
+    std::string payment_id;
+    void serialize(CryptoNote::ISerializer& serializer);
+  };
+  struct Response {
+    std::string integrated_address;
     void serialize(CryptoNote::ISerializer& serializer);
   };
 };
@@ -261,8 +284,10 @@ struct SendTransaction {
     std::vector<WalletRpcOrder> transfers;
     std::string changeAddress;
     uint64_t fee = 0;
+    uint64_t ttl = 0;
     uint32_t anonymity = DEFAULT_ANONYMITY_LEVEL;
     std::string extra;
+    std::string text;
     std::string paymentId;
     uint64_t unlockTime = 0;
 

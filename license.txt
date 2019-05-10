@@ -1,2 +1,0 @@
-Portions of pennykoin are copyright 2013-2018 the developers of: bytecoin, digitalnote, citadel, conceal network, aeon, royalties, bitcedi, monero, graft, and karbovanec
-Pennykoin is released under the LGPL license

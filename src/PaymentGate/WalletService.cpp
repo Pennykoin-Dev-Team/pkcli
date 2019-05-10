@@ -1,5 +1,7 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Copyright (c) 2014-2016 SDN developers
+// Copyright (c) 2011-2017 The Cryptonote developers
+// Copyright (c) 2014-2017 XDN developers
+// Copyright (c) 2016-2017 BXC developers
+// Copyright (c) 2017 UltraNote developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +12,21 @@
 #include <assert.h>
 #include <sstream>
 #include <unordered_set>
-
+#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "Common/CommandLine.h"
+#include "Common/StringTools.h"
+#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "CryptoNoteCore/Account.h"
+#include "crypto/hash.h"
+#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
+#include "WalletLegacy/WalletHelper.h"
+#include "Common/Base58.h"
+#include "Common/CommandLine.h"
+#include "Common/SignalHandler.h"
+#include "Common/StringTools.h"
+#include "Common/PathTools.h"
+#include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
 #include <boost/filesystem/operations.hpp>
 
 #include <System/Timer.h>
@@ -74,7 +90,15 @@ Crypto::Hash parsePaymentId(const std::string& paymentIdStr) {
 
 bool getPaymentIdFromExtra(const std::string& binaryString, Crypto::Hash& paymentId) {
   return CryptoNote::getPaymentIdFromTxExtra(Common::asBinaryArray(binaryString), paymentId);
+
 }
+
+bool getMessageFromExtra(Logging::LoggerRef logger, const std::string& privkey, const std::string& txkey, const std::string& extra, std::string& message){
+    
+    return true;
+} 
+
+
 
 std::string getPaymentIdStringFromExtra(const std::string& binaryString) {
   Crypto::Hash paymentId;
@@ -140,6 +164,12 @@ void addPaymentIdToExtra(const std::string& paymentId, std::string& extra) {
     throw std::runtime_error("Couldn't add payment id to extra");
   }
 
+  std::copy(extraVector.begin(), extraVector.end(), std::back_inserter(extra));
+}
+
+void addTTLToExtra(const uint64_t& ttl, std::string& extra) {
+  std::vector<uint8_t> extraVector;
+  CryptoNote::appendTTLToExtra(extraVector, ttl);
   std::copy(extraVector.begin(), extraVector.end(), std::back_inserter(extra));
 }
 
@@ -348,7 +378,7 @@ void saveWallet(CryptoNote::IWallet& wallet, std::fstream& walletFile, bool save
   walletFile.flush();
 }
 
-void secureSaveWallet(CryptoNote::IWallet& wallet, const std::string& path, bool saveDetailed = true, bool saveCache = true) {
+void secureSaveWallet(CryptoNote::IWallet& wallet, const std::string& path, bool saveDetailed, bool saveCache) {
   std::fstream tempFile;
   std::string tempFilePath = createTemporaryFile(path, tempFile);
 
@@ -512,11 +542,13 @@ std::error_code WalletService::replaceWithNewWallet(const std::string& viewSecre
   return std::error_code();
 }
 
-std::error_code WalletService::createAddress(const std::string& spendSecretKeyText, bool reset, std::string& address) {
+std::error_code WalletService::createAddress(const std::string& spendSecretKeyText, std::string& address) {
   try {
     System::EventLock lk(readyEvent);
 
     logger(Logging::DEBUGGING) << "Creating address";
+    
+    saveWallet();
 
     Crypto::SecretKey secretKey;
     if (!Common::podFromHex(spendSecretKeyText, secretKey)) {
@@ -524,7 +556,7 @@ std::error_code WalletService::createAddress(const std::string& spendSecretKeyTe
       return make_error_code(CryptoNote::error::WalletServiceErrorCode::WRONG_KEY_FORMAT);
     }
 
-    address = wallet.createAddress(secretKey, reset);
+    address = wallet.createAddress(secretKey);
   } catch (std::system_error& x) {
     logger(Logging::WARNING) << "Error while creating address: " << x.what();
     return x.code();
@@ -540,6 +572,8 @@ std::error_code WalletService::createAddress(std::string& address) {
     System::EventLock lk(readyEvent);
 
     logger(Logging::DEBUGGING) << "Creating address";
+    
+    saveWallet();
 
     address = wallet.createAddress();
   } catch (std::system_error& x) {
@@ -825,16 +859,28 @@ std::error_code WalletService::sendTransaction(const SendTransaction::Request& r
     } else {
       sendParams.extra = Common::asString(Common::fromHex(request.extra));
     }
+    
+    logger(Logging::DEBUGGING) << "TTL: " << request.ttl;
+    if (request.paymentId.empty() && request.ttl != 0){
+        addTTLToExtra(request.ttl, sendParams.extra);
+    }
+    
+    if(!request.text.empty()){
+        std::copy(request.text.begin(), request.text.end(), std::back_inserter(sendParams.extra));
+    }
 
     sendParams.sourceAddresses = request.sourceAddresses;
     sendParams.destinations = convertWalletRpcOrdersToWalletOrders(request.transfers);
     sendParams.fee = request.fee;
+    sendParams.ttl = request.ttl;
     sendParams.mixIn = request.anonymity;
     sendParams.unlockTimestamp = request.unlockTime;
     sendParams.changeDestination = request.changeAddress;
 
     size_t transactionId = wallet.transfer(sendParams);
     transactionHash = Common::podToHex(wallet.getTransaction(transactionId).hash);
+    
+    saveWallet();
 
     logger(Logging::DEBUGGING) << "Transaction " << transactionHash << " has been sent";
   } catch (std::system_error& x) {
@@ -847,6 +893,29 @@ std::error_code WalletService::sendTransaction(const SendTransaction::Request& r
 
   return std::error_code();
 }
+/* ---------------------------------------------------------------------------- */
+/* CREATE INTEGRATED */
+std::error_code WalletService::createIntegratedAddress(const CreateIntegrated::Request& request, std::string& integrated_address) 
+{
+  std::string payment_id_str = request.payment_id;
+  std::string address_str = request.address;
+  uint64_t prefix;
+  CryptoNote::AccountPublicAddress addr;
+  /* get the spend and view public keys from the address */
+  const bool valid = CryptoNote::parseAccountAddressString(prefix, 
+                                                          addr,
+                                                          address_str);
+  CryptoNote::BinaryArray ba;
+  CryptoNote::toBinaryArray(addr, ba);
+  std::string keys = Common::asString(ba);
+  /* create the integrated address the same way you make a public address */
+  integrated_address = Tools::Base58::encode_addr (
+      CryptoNote::parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+      payment_id_str + keys
+  );
+  return std::error_code();
+}
+/* ------------------------------------------------------------------------------------ */
 
 std::error_code WalletService::createDelayedTransaction(const CreateDelayedTransaction::Request& request, std::string& transactionHash) {
   try {
@@ -986,6 +1055,22 @@ std::error_code WalletService::getUnconfirmedTransactionHashes(const std::vector
 
   return std::error_code();
 }
+
+std::error_code WalletService::getMessage(const std::string& privkey, const std::string& txkey, const std::string& extra, std::string& message) {
+  try {
+    System::EventLock lk(readyEvent);
+    
+    logger(Logging::DEBUGGING) << "Getting Message from extra " << message;
+    getMessageFromExtra(logger, privkey, txkey, extra, message);
+  
+  } catch (std::system_error& x) {
+    logger(Logging::WARNING) << "Error getting message from extra: " << x.what();
+    return x.code();
+  }
+
+  return std::error_code();
+}
+
 
 std::error_code WalletService::getStatus(uint32_t& blockCount, uint32_t& knownBlockCount, std::string& lastBlockHash, uint32_t& peerCount) {
   try {

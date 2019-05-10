@@ -1,5 +1,7 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Copyright (c) 2014-2016 SDN developers
+// Copyright (c) 2011-2017 The Cryptonote developers
+// Copyright (c) 2014-2017 XDN developers
+// Copyright (c) 2016-2017 BXC developers
+// Copyright (c) 2017 UltraNote developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -42,8 +44,9 @@ public:
 
   std::error_code resetWallet();
   std::error_code replaceWithNewWallet(const std::string& viewSecretKey);
-  std::error_code createAddress(const std::string& spendSecretKeyText, bool reset, std::string& address);  
+  std::error_code createAddress(const std::string& spendSecretKeyText, std::string& address);
   std::error_code createAddress(std::string& address);
+  std::error_code createIntegratedAddress(const CreateIntegrated::Request& request, std::string& integrated_address);
   std::error_code createTrackingAddress(const std::string& spendPublicKeyText, std::string& address);
   std::error_code deleteAddress(const std::string& address);
   std::error_code getSpendkeys(const std::string& address, std::string& publicSpendKeyText, std::string& secretSpendKeyText);
@@ -68,6 +71,8 @@ public:
   std::error_code sendDelayedTransaction(const std::string& transactionHash);
   std::error_code getUnconfirmedTransactionHashes(const std::vector<std::string>& addresses, std::vector<std::string>& transactionHashes);
   std::error_code getStatus(uint32_t& blockCount, uint32_t& knownBlockCount, std::string& lastBlockHash, uint32_t& peerCount);
+  std::error_code getMessage(const std::string& privkey, const std::string& txkey, const std::string& extra, std::string& message);
+
 
 private:
   void refresh();

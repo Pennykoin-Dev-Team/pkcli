@@ -1,11 +1,29 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Copyright (c) 2014-2016 SDN developers
+// Copyright (c) 2011-2017 The Cryptonote developers
+// Copyright (c) 2014-2017 XDN developers
+// Copyright (c) 2016-2017 BXC developers
+// Copyright (c) 2017 UltraNote developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "PaymentServiceJsonRpcMessages.h"
 #include "Serialization/SerializationOverloads.h"
-
+#include "Common/CommandLine.h"
+#include "Common/StringTools.h"
+#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "CryptoNoteCore/Account.h"
+#include "crypto/hash.h"
+#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
+#include "WalletLegacy/WalletHelper.h"
+#include "Common/Base58.h"
+#include "Common/CommandLine.h"
+#include "Common/SignalHandler.h"
+#include "Common/StringTools.h"
+#include "Common/PathTools.h"
+#include "Common/Util.h"
+#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
 namespace PaymentService {
 
 void Reset::Request::serialize(CryptoNote::ISerializer& serializer) {
@@ -42,9 +60,6 @@ void GetAddresses::Response::serialize(CryptoNote::ISerializer& serializer) {
 void CreateAddress::Request::serialize(CryptoNote::ISerializer& serializer) {
   bool hasSecretKey = serializer(spendSecretKey, "spendSecretKey");
   bool hasPublicKey = serializer(spendPublicKey, "spendPublicKey");
-  
-  if (!serializer(reset, "reset"))
-  reset = true;
 
   if (hasSecretKey && hasPublicKey) {
     //TODO: replace it with error codes
@@ -74,6 +89,16 @@ void GetSpendKeys::Request::serialize(CryptoNote::ISerializer& serializer) {
 void GetSpendKeys::Response::serialize(CryptoNote::ISerializer& serializer) {
   serializer(spendSecretKey, "spendSecretKey");
   serializer(spendPublicKey, "spendPublicKey");
+}
+
+void GetMessage::Request::serialize(CryptoNote::ISerializer& serializer){
+    serializer(privkey, "privkey");
+    serializer(txkey, "txkey");
+    serializer(extra, "extra");
+}
+
+void GetMessage::Response::serialize(CryptoNote::ISerializer& serializer){
+    serializer(message, "message");
 }
 
 void GetBalance::Request::serialize(CryptoNote::ISerializer& serializer) {
@@ -120,7 +145,13 @@ void GetTransactionHashes::Request::serialize(CryptoNote::ISerializer& serialize
 void GetTransactionHashes::Response::serialize(CryptoNote::ISerializer& serializer) {
   serializer(items, "items");
 }
-
+void CreateIntegrated::Request::serialize(CryptoNote::ISerializer& serializer) {
+  serializer(address, "address");
+  serializer(payment_id, "payment_id");
+}
+void CreateIntegrated::Response::serialize(CryptoNote::ISerializer& serializer) {
+  serializer(integrated_address, "integrated_address");
+}
 void TransferRpcInfo::serialize(CryptoNote::ISerializer& serializer) {
   serializer(type, "type");
   serializer(address, "address");
@@ -207,7 +238,7 @@ void SendTransaction::Request::serialize(CryptoNote::ISerializer& serializer) {
   if (!serializer(anonymity, "anonymity")) {
     throw RequestSerializationError();
   }
-
+  
   bool hasExtra = serializer(extra, "extra");
   bool hasPaymentId = serializer(paymentId, "paymentId");
 
@@ -216,6 +247,8 @@ void SendTransaction::Request::serialize(CryptoNote::ISerializer& serializer) {
   }
 
   serializer(unlockTime, "unlockTime");
+  serializer(ttl, "ttl");
+  serializer(text, "text");
 }
 
 void SendTransaction::Response::serialize(CryptoNote::ISerializer& serializer) {

@@ -70,8 +70,8 @@ add_dependencies(Rpc version)
 add_dependencies(Daemon version)
 add_dependencies(SimpleWallet version)
 add_dependencies(P2P version)
+add_dependencies(PaymentGateService version)
 
-
-set_property(TARGET SimpleWallet PROPERTY OUTPUT_NAME "pkcli")
-set_property(TARGET Daemon PROPERTY OUTPUT_NAME "pknode")
-set_property(TARGET PaymentGateService PROPERTY OUTPUT_NAME "pkservice")
+set_property(TARGET SimpleWallet PROPERTY OUTPUT_NAME "PKCli")
+set_property(TARGET PaymentGateService PROPERTY OUTPUT_NAME "PKService")
+set_property(TARGET Daemon PROPERTY OUTPUT_NAME "PKNode")

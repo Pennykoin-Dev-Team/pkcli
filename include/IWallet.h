@@ -93,6 +93,7 @@ struct TransactionParameters {
   std::vector<std::string> sourceAddresses;
   std::vector<WalletOrder> destinations;
   uint64_t fee = 0;
+   uint64_t ttl = 0;
   uint64_t mixIn = 0;
   std::string extra;
   uint64_t unlockTimestamp = 0;
@@ -128,7 +129,7 @@ public:
   virtual KeyPair getAddressSpendKey(const std::string& address) const = 0;
   virtual KeyPair getViewKey() const = 0;
   virtual std::string createAddress() = 0;
-  virtual std::string createAddress(const Crypto::SecretKey& spendSecretKey, bool reset = true) = 0;
+  virtual std::string createAddress(const Crypto::SecretKey& spendSecretKey) = 0;
   virtual std::string createAddress(const Crypto::PublicKey& spendPublicKey) = 0;
   virtual void deleteAddress(const std::string& address) = 0;
 
@@ -136,6 +137,7 @@ public:
   virtual uint64_t getActualBalance(const std::string& address) const = 0;
   virtual uint64_t getPendingBalance() const = 0;
   virtual uint64_t getPendingBalance(const std::string& address) const = 0;
+
   virtual size_t getTransactionCount() const = 0;
   virtual WalletTransaction getTransaction(size_t transactionIndex) const = 0;
   virtual size_t getTransactionTransferCount(size_t transactionIndex) const = 0;
