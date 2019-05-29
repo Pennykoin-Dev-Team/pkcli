@@ -111,7 +111,7 @@ namespace CryptoNote {
 		else if (majorVersion == BLOCK_MAJOR_VERSION_4) {
 			return m_upgradeHeightV4;
 		}
-				}
+			
 		else if (majorVersion == BLOCK_MAJOR_VERSION_5) {
 			return m_upgradeHeightV5;
 		}
