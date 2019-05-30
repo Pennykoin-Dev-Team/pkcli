@@ -20,7 +20,7 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
    
    
    
- For solus:  "-Wno-error=misleading-indentation -Wno-error=class-memaccess " need to be added to line 82, if there's a function in cmake to decect distro I haven't found it yet, so in git all linux OS will have same c++ options applied
+ For solus:  "-Wno-error=misleading-indentation -Wno-error=class-memaccess -Wno-error=misleading-indentation" need to be added to line 82, if there's a function in cmake to decect distro I haven't found it yet, so in git all linux OS will have same c++ options applied
 
 
 
