@@ -10,7 +10,7 @@
 
 The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is the wallet, and PKService (usually only needed by merchants, pools, or exchanges. is the multi-wallet service usually called walletd similar.
 
- CLI Development is targeted at embedded or VPS nodes. We target ubuntu 16.04 as the base for this reason. Effort is made to make sure CLI builds on windows, and binaries will be posted. 16 commits ago or so it also compiled out of the box for centos 7 and solus.  There is a minor tweak to get ubuntu 18.04 going, see bionic.md. 
+ CLI Development is targeted at embedded or VPS nodes. We target ubuntu 16.04 as the base for this reason. Effort is made to make sure CLI builds on windows, and binaries will be posted. 16 commits ago or so it also compiled out of the box for centos 7 and solus. 
  
   For ubuntu:
   
