@@ -14,7 +14,7 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
  
   For ubuntu:
   
-  sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev
+  sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev git nano mc
   
   will set up the environment needed. To build just enter "make" in the directory you cloned to.
 
