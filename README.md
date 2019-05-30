@@ -16,7 +16,11 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
   
   sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev git nano mc
   
-  will set up the environment needed. To build just enter "make" in the directory you cloned to.
+  will set up the environment needed. To build just enter "make" in the directory you cloned to. 
+   
+   
+   
+ For solus:  "-Wno-error=misleading-indentation -Wno-error=class-memaccess " need to be added to line 82, if there's a function in cmake to decect distro I haven't found it yet, so in git all linux OS will have same c++ options applied
 
 
 
