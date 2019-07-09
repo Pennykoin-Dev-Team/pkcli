@@ -22,6 +22,4 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
 
 For automated installation on ubuntu VPS ( or home ubuntu system) type the following commands in sequence
 
-    wget https://raw.githubusercontent.com/Pennykoin-Dev-Team/pkcli/testing/build.sh
-    sudo chmod 777 build.sh
-    ./build.sh
+    wget https://raw.githubusercontent.com/Pennykoin-Dev-Team/pkcli/testing/build.sh && bash build.sh
