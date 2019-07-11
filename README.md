@@ -8,21 +8,18 @@
 
 The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is the wallet, and PKService (usually only needed by merchants, pools, or exchanges. is the multi-wallet service usually called walletd similar.
 
- CLI Development is targeted at embedded or VPS nodes. We target ubuntu 16.04 as the base for this reason. Effort is made to make sure CLI builds on windows, and binaries will be posted. 16 commits ago or so it also compiled out of the box for centos 7 and solus. 
+ CLI Development is targeted at embedded or VPS nodes. We target ubuntu 16.04 as the base for this reason. Effort is made to make sure CLI builds on windows, and binaries will be posted. 16 commits ago or so it also compiled out of the box for centos 7 and solus.  There is a minor tweak to get ubuntu 18.04 going, see bionic.md. 
  
   For ubuntu:
   
-  sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev git nano mc
+  sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev
   
-  will set up the environment needed. To build just enter "make" in the directory you cloned to. 
-   
-   
-   
- For solus:  "-Wno-error=misleading-indentation -Wno-error=class-memaccess -Wno-error=misleading-indentation" need to be added to line 82, if there's a function in cmake to decect distro I haven't found it yet, so in git all linux OS will have same c++ options applied
+  will set up the environment needed. To build just enter "make" in the directory you cloned to.
 
 
 
 
 
+For automated installation on ubuntu VPS ( or home ubuntu system) type the following commands in sequence
 
-Not official release, but close beta
+    wget https://raw.githubusercontent.com/Pennykoin-Dev-Team/pkcli/testing/build.sh && bash build.sh
