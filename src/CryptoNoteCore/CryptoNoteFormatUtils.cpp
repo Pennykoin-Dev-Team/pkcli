@@ -478,22 +478,16 @@ namespace CryptoNote {
 		return getObjectHash(blob, res);
 	}
 
-bool get_block_longhash(cn_context &context, const Block& b, Hash& res) {
-	BinaryArray bd;
-	if (!get_block_hashing_blob(b, bd)) {
-		return false;
-	}
 
-	if (b.majorVersion >= 5) {
-		cn_lite_slow_hash_v0(context, bd.data(), bd.size(), res);
-	}
-	else {
+	bool get_block_longhash(cn_context &context, const Block& b, Hash& res) {
+		BinaryArray bd;
+		if (!get_block_hashing_blob(b, bd)) {
+			return false;
+		}
+
 		cn_slow_hash(context, bd.data(), bd.size(), res);
+		return true;
 	}
-
-
-	return true;
-}
 
 	std::vector<uint32_t> relative_output_offsets_to_absolute(const std::vector<uint32_t>& off) {
 		std::vector<uint32_t> res = off;

@@ -1,7 +1,4 @@
-// Copyright (c) 2011-2017 The Cryptonote developers
-// Copyright (c) 2018 The Circle Foundation
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 
 #include <alloca.h>
 #include <cassert>
@@ -49,7 +46,6 @@ namespace Crypto {
     ge_scalarmult_base(&point, reinterpret_cast<unsigned char*>(&sec));
     ge_p3_tobytes(reinterpret_cast<unsigned char*>(&pub), &point);
   }
-
   void crypto_ops::generate_keys_from_seed(PublicKey &pub, SecretKey &sec, SecretKey &seed) {
     ge_p3 point;
     sec = seed;
@@ -293,7 +289,7 @@ namespace Crypto {
     ge_mul8(&point2, &point);
     ge_p1p1_to_p3(&res, &point2);
   }
-
+	
   KeyImage crypto_ops::scalarmultKey(const KeyImage & P, const KeyImage & a) {
     ge_p3 A;
     ge_p2 R;
@@ -343,7 +339,7 @@ namespace Crypto {
   };
 
   static inline size_t rs_comm_size(size_t pubs_count) {
-    return sizeof(rs_comm) + pubs_count * sizeof(((rs_comm*)0)->ab[0]);
+return sizeof(rs_comm) + pubs_count * sizeof(((rs_comm*)0)->ab[0]);
   }
 
   void crypto_ops::generate_ring_signature(const Hash &prefix_hash, const KeyImage &image,
