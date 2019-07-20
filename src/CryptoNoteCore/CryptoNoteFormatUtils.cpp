@@ -1,13 +1,11 @@
 #include "CryptoNoteFormatUtils.h"
-
+#include "crypto/hash.h"
 #include <set>
 #include <Logging/LoggerRef.h>
 #include <Common/int-util.h>
 #include <Common/Varint.h>
-
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "Serialization/BinaryInputStreamSerializer.h"
-
 #include "Account.h"
 #include "CryptoNoteBasicImpl.h"
 #include "CryptoNoteSerialization.h"
@@ -478,16 +476,22 @@ namespace CryptoNote {
 		return getObjectHash(blob, res);
 	}
 
-
-	bool get_block_longhash(cn_context &context, const Block& b, Hash& res) {
-		BinaryArray bd;
-		if (!get_block_hashing_blob(b, bd)) {
-			return false;
-		}
-
-		cn_slow_hash(context, bd.data(), bd.size(), res);
-		return true;
+bool get_block_longhash(cn_context &context, const Block& b, Hash& res) {
+	BinaryArray bd;
+	if (!get_block_hashing_blob(b, bd)) {
+		return false;
 	}
+
+	if (b.majorVersion >= 5) {
+		cn_slow_hash(context, bd.data(), bd.size(), res);
+	}
+	else {
+		cn_slow_hash(context, bd.data(), bd.size(), res);
+	}
+
+
+	return true;
+}
 
 	std::vector<uint32_t> relative_output_offsets_to_absolute(const std::vector<uint32_t>& off) {
 		std::vector<uint32_t> res = off;
