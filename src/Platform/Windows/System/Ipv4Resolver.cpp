@@ -13,6 +13,7 @@
 #endif
 #include <ws2tcpip.h>
 #include <System/Dispatcher.h>
+#include <stdexcept>
 #include <System/ErrorMessage.h>
 #include <System/InterruptedException.h>
 #include <System/Ipv4Address.h>

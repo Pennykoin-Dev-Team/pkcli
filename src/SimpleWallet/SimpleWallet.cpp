@@ -601,7 +601,6 @@ m_walletSynchronized(false),
   m_consoleHandler.setHandler("showkeys", boost::bind(&simple_wallet::export_keys, this, _1), "Show the secret keys of the opened wallet");
   // m_consoleHandler.setHandler("rand_id", boost::bind(&simple_wallet::rand_integrated, this, _1), " Integrated address with a random payment ID");
   m_consoleHandler.setHandler("integrated", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID");
-  m_consoleHandler.setHandler("tracking", boost::bind(&simple_wallet::export_tracking_key, this, _1), "Show the tracking key of the opened wallet");
   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
   m_consoleHandler.setHandler("inc_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
   m_consoleHandler.setHandler("transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "transfers <height> - Show all known transfers from a certain (optional) block height");
@@ -1393,20 +1392,13 @@ bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::ve
   bool deterministic_private_keys = deterministic_private_view_key == keys.viewSecretKey;
 /* dont show a mnemonic seed if it is an old non-deterministic wallet */
   if (deterministic_private_keys) {
-    std::cout << "25 Word phrase: " << generate_mnemonic(keys.spendSecretKey) << std::endl;
+    std::cout << "25 Word phrase: " << generate_mnemonic(keys.spendSecretKey) << std::endl; 
   }
   
-  return true;
-}
-bool simple_wallet::export_tracking_key(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
-    AccountKeys keys;
-    m_wallet->getAccountKeys(keys);
-    std::string spend_public_key = Common::podToHex(keys.address.spendPublicKey);
+   std::string spend_public_key = Common::podToHex(keys.address.spendPublicKey);
     keys.spendSecretKey = boost::value_initialized<Crypto::SecretKey>();
     success_msg_writer(true) << "Tracking key: " << spend_public_key << Common::podToHex(keys.address.viewPublicKey) << Common::podToHex(keys.spendSecretKey) << Common::podToHex(keys.viewSecretKey);
-    // This will show Tracking Key in style of Private Key Backup or Paperwallet, to prevent confusing we use above style of Bytecoin like tracking keys
-    // success_msg_writer(true) << "Tracking key: " << Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX, std::string(reinterpret_cast<char*>(&keys), sizeof(keys)));
-    return true;
+  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
