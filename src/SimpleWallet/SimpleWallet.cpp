@@ -598,24 +598,24 @@ simple_wallet::simple_wallet(System::Dispatcher& dispatcher, const CryptoNote::C
   m_initResultPromise(nullptr),
 m_walletSynchronized(false),
   m_trackingWallet(false){
-  m_consoleHandler.setHandler("showkeys", boost::bind(&simple_wallet::export_keys, this, _1), "Show the secret keys of the opened wallet");
+  m_consoleHandler.setHandler("showkeys", boost::bind(&simple_wallet::export_keys, this, _1), "Show all keys of the opened wallet");
   // m_consoleHandler.setHandler("rand_id", boost::bind(&simple_wallet::rand_integrated, this, _1), " Integrated address with a random payment ID");
-  m_consoleHandler.setHandler("integrated", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID");
+  m_consoleHandler.setHandler("integrate", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID, generate one with make_id command");
   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
-  m_consoleHandler.setHandler("inc_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
-  m_consoleHandler.setHandler("transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "transfers <height> - Show all known transfers from a certain (optional) block height");
+  m_consoleHandler.setHandler("tx_in", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
+  m_consoleHandler.setHandler("tx", boost::bind(&simple_wallet::listTransfers, this, _1), "transfers <height> - Show all known transfers from a certain (optional) block height");
  m_consoleHandler.setHandler("outputs", boost::bind(&simple_wallet::show_num_unlocked_outputs, this, _1), "Show the number of unlocked outputs available for a transaction");
-  m_consoleHandler.setHandler("payments", boost::bind(&simple_wallet::show_payments, this, _1), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
+  m_consoleHandler.setHandler("tx_id", boost::bind(&simple_wallet::show_payments, this, _1), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
   m_consoleHandler.setHandler("height", boost::bind(&simple_wallet::show_blockchain_height, this, _1), "Show blockchain height");
-  m_consoleHandler.setHandler("transfer", boost::bind(&simple_wallet::transfer, this, _1),
-    "transfer <mixin_count> <addr_1> <amount_1> [<addr_2> <amount_2> ... <addr_N> <amount_N>] [-p payment_id] [-f fee]"
+  m_consoleHandler.setHandler("send", boost::bind(&simple_wallet::transfer, this, _1),
+    "send <mixin_count> <addr_1> <amount_1> [<addr_2> <amount_2> ... <addr_N> <amount_N>] [-p payment_id] [-f fee]"
     " - Transfer <amount_1>,... <amount_N> to <address_1>,... <address_N>, respectively. "
     "<mixin_count> is the number of transactions yours is indistinguishable from (from 0 to maximum available)");
-  m_consoleHandler.setHandler("paymentid", boost::bind(&simple_wallet::generate_payment_id, this, _1), "Generate random Payment ID");
+  m_consoleHandler.setHandler("make_id", boost::bind(&simple_wallet::generate_payment_id, this, _1), "Generate random Payment ID, use output with integrate command");
   m_consoleHandler.setHandler("set_log", boost::bind(&simple_wallet::set_log, this, _1), "set_log <level> - Change current log level, <level> is a number 0-4");
-  m_consoleHandler.setHandler("address", boost::bind(&simple_wallet::print_address, this, _1), "Show current wallet public address");
+  m_consoleHandler.setHandler("address", boost::bind(&simple_wallet::print_address, this, _1), "show address of the opened wallet");
   m_consoleHandler.setHandler("save", boost::bind(&simple_wallet::save, this, _1), "Save wallet synchronized data");
-  m_consoleHandler.setHandler("reset", boost::bind(&simple_wallet::reset, this, _1), "Discard cache data and start synchronizing from the start");
+  m_consoleHandler.setHandler("reset", boost::bind(&simple_wallet::reset, this, _1), "Discard saved data & rescan the blockchain");
   m_consoleHandler.setHandler("help", boost::bind(&simple_wallet::help, this, _1), "Show this help");
   m_consoleHandler.setHandler("exit", boost::bind(&simple_wallet::exit, this, _1), "Close wallet");
 }
@@ -1674,12 +1674,15 @@ bool simple_wallet::transfer(const std::vector<std::string> &args) {
     WalletHelper::IWalletRemoveObserverGuard removeGuard(*m_wallet, sent);
 
 
-    if (cmd.fake_outs_count < 2) {
+    if (cmd.fake_outs_count < 3) {
       fail_msg_writer() << "Mixin too small, must be above 2";
       return true;
     }
 
-
+  if (cmd.fake_outs_count > 9) {
+      fail_msg_writer() << "Mixin too large, must be below 10";
+      return true;
+    }
     CryptoNote::TransactionId tx = m_wallet->sendTransaction(cmd.dsts, cmd.fee, extraString, cmd.fake_outs_count, 0, messages, ttl);
     if (tx == WALLET_LEGACY_INVALID_TRANSACTION_ID) {
       fail_msg_writer() << "Can't send money";
