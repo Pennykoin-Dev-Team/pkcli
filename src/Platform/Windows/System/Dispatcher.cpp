@@ -15,6 +15,7 @@
 #define NOMINMAX
 #endif
 #include <winsock2.h>
+#include <stdexcept>
 #include "ErrorMessage.h"
 
 namespace System {

@@ -1,7 +1,3 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Copyright (c) 2014-2016 SDN developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
@@ -66,7 +62,7 @@ const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 16500;
 const uint32_t UPGRADE_HEIGHT_V4                             = 24400;
-const uint32_t UPGRADE_HEIGHT_V5                             = 139865;
+const uint32_t UPGRADE_HEIGHT_V5     						 = 500000;
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
 const size_t   UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const size_t   UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks

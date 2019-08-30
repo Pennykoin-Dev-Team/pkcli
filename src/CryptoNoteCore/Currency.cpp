@@ -467,13 +467,7 @@ namespace CryptoNote {
 	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps,
 		std::vector<difficulty_type> cumulativeDifficulties) const {
 		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_3) {
-			// LWMA difficulty algorithm (simplified)
-			// Copyright (c) 2017-2018 Zawy
-			// MIT license http://www.opensource.org/licenses/mit-license.php
-			// set constants:
-			// N is most recent solved block.
-			// T= target solvetime, adjust = 0.9989^(500/N),  N=int((45*(600/T)^(0.3*(600/T)^0.2)
-			// timestamp, cumulativedifficulties, and target are vectors of size N+1
+
 
 			const int64_t T = static_cast<int64_t>(m_difficultyTarget);
 			size_t N = CryptoNote::parameters::DIFFICULTY_WINDOW_V2;

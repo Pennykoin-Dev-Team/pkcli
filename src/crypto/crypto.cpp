@@ -1,7 +1,4 @@
-// Copyright (c) 2011-2017 The Cryptonote developers
-// Copyright (c) 2018 The Circle Foundation
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 
 #include <alloca.h>
 #include <cassert>
@@ -49,7 +46,6 @@ namespace Crypto {
     ge_scalarmult_base(&point, reinterpret_cast<unsigned char*>(&sec));
     ge_p3_tobytes(reinterpret_cast<unsigned char*>(&pub), &point);
   }
-
   void crypto_ops::generate_keys_from_seed(PublicKey &pub, SecretKey &sec, SecretKey &seed) {
     ge_p3 point;
     sec = seed;
@@ -256,11 +252,18 @@ namespace Crypto {
 #endif
     buf.h = prefix_hash;
     buf.key = reinterpret_cast<const EllipticCurvePoint&>(pub);
+     try_again:
     random_scalar(k);
+        if (((const uint32_t*)(&k))[7] == 0) // we don't want tiny numbers here
+      goto try_again;
     ge_scalarmult_base(&tmp3, reinterpret_cast<unsigned char*>(&k));
     ge_p3_tobytes(reinterpret_cast<unsigned char*>(&buf.comm), &tmp3);
     hash_to_scalar(&buf, sizeof(s_comm), reinterpret_cast<EllipticCurveScalar&>(sig));
+        if (!sc_isnonzero((const unsigned char*)reinterpret_cast<EllipticCurveScalar&>(sig).data))
+      goto try_again;
     sc_mulsub(reinterpret_cast<unsigned char*>(&sig) + 32, reinterpret_cast<unsigned char*>(&sig), reinterpret_cast<const unsigned char*>(&sec), reinterpret_cast<unsigned char*>(&k));
+   if (!sc_isnonzero((const unsigned char*)reinterpret_cast<unsigned char*>(&sig) + 32))
+      goto try_again;
   }
 
   bool crypto_ops::check_signature(const Hash &prefix_hash, const PublicKey &pub, const Signature &sig) {
@@ -274,11 +277,14 @@ namespace Crypto {
     if (ge_frombytes_vartime(&tmp3, reinterpret_cast<const unsigned char*>(&pub)) != 0) {
       abort();
     }
-    if (sc_check(reinterpret_cast<const unsigned char*>(&sig)) != 0 || sc_check(reinterpret_cast<const unsigned char*>(&sig) + 32) != 0) {
+  if (sc_check(reinterpret_cast<const unsigned char*>(&sig)) != 0 || sc_check(reinterpret_cast<const unsigned char*>(&sig) + 32) != 0 || !sc_isnonzero(reinterpret_cast<const unsigned char*>(&sig))) {
       return false;
     }
     ge_double_scalarmult_base_vartime(&tmp2, reinterpret_cast<const unsigned char*>(&sig), &tmp3, reinterpret_cast<const unsigned char*>(&sig) + 32);
     ge_tobytes(reinterpret_cast<unsigned char*>(&buf.comm), &tmp2);
+    	static const EllipticCurvePoint infinity = { { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+	if (memcmp(&buf.comm, &infinity, 32) == 0)
+		return false;
     hash_to_scalar(&buf, sizeof(s_comm), c);
     sc_sub(reinterpret_cast<unsigned char*>(&c), reinterpret_cast<unsigned char*>(&c), reinterpret_cast<const unsigned char*>(&sig));
     return sc_isnonzero(reinterpret_cast<unsigned char*>(&c)) == 0;
@@ -293,7 +299,7 @@ namespace Crypto {
     ge_mul8(&point2, &point);
     ge_p1p1_to_p3(&res, &point2);
   }
-
+	
   KeyImage crypto_ops::scalarmultKey(const KeyImage & P, const KeyImage & a) {
     ge_p3 A;
     ge_p2 R;
@@ -343,7 +349,7 @@ namespace Crypto {
   };
 
   static inline size_t rs_comm_size(size_t pubs_count) {
-    return sizeof(rs_comm) + pubs_count * sizeof(((rs_comm*)0)->ab[0]);
+return sizeof(rs_comm) + pubs_count * sizeof(((rs_comm*)0)->ab[0]);
   }
 
   void crypto_ops::generate_ring_signature(const Hash &prefix_hash, const KeyImage &image,

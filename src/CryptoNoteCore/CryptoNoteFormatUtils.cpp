@@ -1,13 +1,11 @@
 #include "CryptoNoteFormatUtils.h"
-
+#include "crypto/hash.h"
 #include <set>
 #include <Logging/LoggerRef.h>
 #include <Common/int-util.h>
 #include <Common/Varint.h>
-
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "Serialization/BinaryInputStreamSerializer.h"
-
 #include "Account.h"
 #include "CryptoNoteBasicImpl.h"
 #include "CryptoNoteSerialization.h"
@@ -485,7 +483,7 @@ bool get_block_longhash(cn_context &context, const Block& b, Hash& res) {
 	}
 
 	if (b.majorVersion >= 5) {
-		cn_lite_slow_hash_v0(context, bd.data(), bd.size(), res);
+		cn_slow_hash(context, bd.data(), bd.size(), res);
 	}
 	else {
 		cn_slow_hash(context, bd.data(), bd.size(), res);
