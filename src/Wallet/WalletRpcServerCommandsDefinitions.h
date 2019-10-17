@@ -111,26 +111,27 @@ namespace Tools
 				KV_MEMBER(messages);
 			}
 		};
- struct COMMAND_RPC_CREATE_INTEGRATED
-    {
-      struct request
-      {
-        std::string payment_id;
-        std::string address;      
-        void serialize(ISerializer& s) {
-          KV_MEMBER(payment_id)
-          KV_MEMBER(address)         
-        }
-      };
-      struct response
-      {
-        std::string integrated_address;
-        void serialize(ISerializer& s) 
-        {
-          KV_MEMBER(integrated_address)
-        }
-    };
-  };
+
+		struct COMMAND_RPC_CREATE_INTEGRATED
+			{
+			  struct request
+			  {
+				std::string payment_id;
+				std::string address;
+				void serialize(ISerializer& s) {
+				  KV_MEMBER(payment_id)
+				  KV_MEMBER(address)
+				}
+			  };
+			  struct response
+			  {
+				std::string integrated_address;
+				void serialize(ISerializer& s)
+				{
+				  KV_MEMBER(integrated_address)
+				}
+			};
+		  };
 
 		struct COMMAND_RPC_GET_MESSAGES {
 			struct request {
@@ -226,6 +227,35 @@ namespace Tools
 			};
 		};
 
+
+		struct COMMAND_RPC_GEN_PAYMENT_ID
+		{
+			typedef CryptoNote::EMPTY_STRUCT request;
+			struct response
+			{
+				std::string payment_id;
+
+				void serialize(ISerializer& s)
+				{
+					KV_MEMBER(payment_id)
+				}
+			};
+		};
+
+		struct COMMAND_RPC_GET_ADDRESS 	{
+			typedef CryptoNote::EMPTY_STRUCT request;
+			struct response
+			{
+				std::string address;
+
+				void serialize(ISerializer& s)
+				{
+					KV_MEMBER(address)
+				}
+			};
+		};
+
+
 		struct COMMAND_RPC_GET_HEIGHT {
 			typedef CryptoNote::EMPTY_STRUCT request;
 
@@ -238,17 +268,18 @@ namespace Tools
 			};
 		};
 
-  struct COMMAND_RPC_GET_OUTPUTS
-  {
-    typedef CryptoNote::EMPTY_STRUCT request;
-    struct response
-    {
-      size_t num_unlocked_outputs;
-      void serialize(ISerializer& s) {
-        KV_MEMBER(num_unlocked_outputs)
-      }
-    };
-  };
+		struct COMMAND_RPC_GET_OUTPUTS
+		{
+			typedef CryptoNote::EMPTY_STRUCT request;
+			struct response
+			{
+			  size_t num_unlocked_outputs;
+			  void serialize(ISerializer& s) {
+				KV_MEMBER(num_unlocked_outputs)
+			  }
+			};
+		};
+
 		struct COMMAND_RPC_RESET {
 			typedef CryptoNote::EMPTY_STRUCT request;
 			typedef CryptoNote::EMPTY_STRUCT response;
