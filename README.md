@@ -1,5 +1,14 @@
-# Pennykoin
+Pennykoin
+===
+Ticker: PK
 
+Web: www.pennykoin.org
+
+Twitter: www.twitter.com/Pennykoin_org
+
+Telegram: https://t.me/Pennykoin_org
+
+Discord: https://discord.gg/rDKmDJT
 
 
    Pennykoin is a private, secure cryptocurrency primarily forked form digital/dark/ducknote.  There was no premine or ICO, all coins are emitted as mining rewards or interest.  Pennykoin works like cash, nobody can track your purchases, or see what's in your wallet. But it's easier than cash, it works like an online checking account, including an option to deposit pennykoin and earn interest.
@@ -10,11 +19,15 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
 
  CLI Development is targeted at embedded or VPS nodes. We target ubuntu 16.04 as the base for this reason. Effort is made to make sure CLI builds on windows, and binaries will be posted. 16 commits ago or so it also compiled out of the box for centos 7 and solus.  There is a minor tweak to get ubuntu 18.04 going, see bionic.md. 
  
-  For ubuntu:
+# Building on Ubuntu:
+
+    wget https://github.com/Pennykoin-Dev-Team/pkcli/raw/master/build.sh && bash build.sh
+   
+Or, manually...
   
-  sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev
+    sudo apt install screen make cmake build-essential libboost-all-dev pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libreadline6-dev libldns-dev```
   
-  will set up the environment needed. To build just enter "make" in the directory you cloned to.
+ Will set up the environment needed. To build just enter "make" in the directory you cloned to.
 
 
 
@@ -22,4 +35,4 @@ The PKCli package contains/compiles 3 binaries. PKNode is the daemon, PKCli is t
 
 For automated installation on ubuntu VPS ( or home ubuntu system) type the following command
 
-    wget https://github.com/Pennykoin-Dev-Team/pkcli/raw/master/build.sh && bash build.sh
+    
