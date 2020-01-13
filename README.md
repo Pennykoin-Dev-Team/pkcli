@@ -1,4 +1,4 @@
-Pennykoin
+Pennykoin v4.1.51
 ===
 
    Pennykoin is a private, secure cryptocurrency. There was no premine or ICO, all coins are emitted as mining rewards or interest.  Pennykoin works like cash, nobody can track your purchases, or see what's in your wallet. But it's easier than cash, it works like an online checking account, including an option to deposit pennykoin and earn interest.
@@ -7,6 +7,7 @@ Pennykoin
  
  
 # Building on Ubuntu 16:
+=======
 
     wget https://github.com/Pennykoin-Dev-Team/pkcli/raw/master/build.sh && bash build.sh
 
@@ -27,7 +28,3 @@ Telegram: https://t.me/Pennykoin_org
 
 Discord: https://discord.gg/rDKmDJT
    
-
-
-
-    
